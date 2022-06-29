@@ -112,6 +112,7 @@ CREATE TABLE `employees` (
   `user_id` int(11) NOT NULL,
   `hotel_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `gender` enum('male','female') NOT NULL,
   `address` varchar(250) NOT NULL,
   `email` varchar(100) NOT NULL,
   `phone_number` varchar(100) NOT NULL,
@@ -338,4 +339,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-06-28 23:58:47
+-- Dump completed on 2022-06-29 22:47:45
