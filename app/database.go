@@ -2,13 +2,14 @@ package app
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/agisnur24/booking_hotel_system.git/helper"
 	_ "github.com/go-sql-driver/mysql"
-	"time"
 )
 
 func NewDB() *sql.DB {
-	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/booking_system_management")
+	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/booking_management_system")
 	helper.PanicIfError(err)
 
 	db.SetMaxIdleConns(10)

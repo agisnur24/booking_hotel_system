@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+
 	"github.com/agisnur24/booking_hotel_system.git/exception"
 	"github.com/agisnur24/booking_hotel_system.git/helper"
 	"github.com/agisnur24/booking_hotel_system.git/model/domain"
@@ -33,11 +34,13 @@ func (service *UserServiceImpl) Create(ctx context.Context, request web.UserCrea
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
+	roleId:= //ambil dari RoleService getrolebyrolename
+
 	user := domain.User{
 		Name:     request.Name,
 		Email:    request.Email,
 		Password: request.Password,
-		Role:     request.Role,
+		RoleId: roleId,
 	}
 
 	user = service.UserRepository.Create(ctx, tx, user)

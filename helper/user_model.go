@@ -6,11 +6,12 @@ import (
 )
 
 func ToUserResponse(user domain.User) web.UserResponse {
+
 	return web.UserResponse{
 		Id:    user.Id,
 		Name:  user.Name,
 		Email: user.Email,
-		Role:  user.Role,
+		Role:  user.RoleName,
 	}
 }
 
