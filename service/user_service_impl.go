@@ -26,7 +26,7 @@ func NewUserService(userRepository repository.UserRepository, DB *sql.DB, valida
 	}
 }
 
-func (service *UserServiceImpl) Create(ctx context.Context, request web.UserCreateRequest) web.UserRespons {
+func (service *UserServiceImpl) Create(ctx context.Context, request web.UserCreateRequest) web.UserResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -34,15 +34,14 @@ func (service *UserServiceImpl) Create(ctx context.Context, request web.UserCrea
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	role := domain.Role{ //ini belum selesai
-		RoleName: request.RoleName,
-	} //ambil dari RoleService getrolebyrolename
+	//roleId := //ambil dari RoleService getrolebyrolename
 
 	user := domain.User{
 		Name:     request.Name,
 		Email:    request.Email,
 		Password: request.Password,
-		RoleId:   roleId,
+		RoleId:   request.RoleId,
+		RoleName: request.RoleName,
 	}
 
 	user = service.UserRepository.Create(ctx, tx, user)
@@ -67,7 +66,6 @@ func (service *UserServiceImpl) Update(ctx context.Context, request web.UserUpda
 	user.Password = request.Password
 
 	user = service.UserRepository.Update(ctx, tx, user)
-
 	return helper.ToUserResponse(user)
 }
 

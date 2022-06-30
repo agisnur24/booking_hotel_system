@@ -64,7 +64,7 @@ func (controller *RoleControllerImpl) Delete(writer http.ResponseWriter, request
 func (controller *RoleControllerImpl) FindByRoleName(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	userEmail := params.ByName("userEmail")
 
-	customerResponse := controller.UserService.FindByEmail(request.Context(), userEmail)
+	customerResponse := controller.RoleService.FindByRoleName(request.Context(), userEmail)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
