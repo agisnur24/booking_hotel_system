@@ -20,7 +20,11 @@ func main() {
 	userService := service.NewUserService(userRepository, db, validate)
 	userController := controller.NewUserController(userService)
 
-	router := app.UserRouter(userController)
+	roleRepository := repository.NewRoleRepository()
+	roleService := service.NewRoleService(roleRepository, db, validate)
+	roleController := controller.NewRoleController(roleService)
+
+	router := app.NewRouter(userController, roleController)
 
 	server := http.Server{
 		Addr:    "localhost:3000",
