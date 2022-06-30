@@ -17,7 +17,7 @@ func NewUserRepository() UserRepository {
 
 func (repository UserRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, user domain.User) domain.User {
 	SQL := "insert into users(name, email, password, role) values (?, ?, ?, ?)"
-	result, err := tx.ExecContext(ctx, SQL, user.Name, user.Email, user.Password, user.Role)
+	result, err := tx.ExecContext(ctx, SQL, user.Name, user.Email, user.Password, user.RoleName)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
@@ -49,7 +49,7 @@ func (repository UserRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx
 
 	user := domain.User{}
 	if rows.Next() {
-		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Role)
+		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.RoleName)
 		helper.PanicIfError(err)
 		return user, nil
 	} else {
@@ -66,7 +66,7 @@ func (repository UserRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []
 	var users []domain.User
 	for rows.Next() {
 		user := domain.User{}
-		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Role)
+		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.RoleName)
 		helper.PanicIfError(err)
 		users = append(users, user)
 	}
