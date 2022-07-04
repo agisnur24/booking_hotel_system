@@ -34,14 +34,11 @@ func (service *UserServiceImpl) Create(ctx context.Context, request web.UserCrea
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	//roleId := //ambil dari RoleService getrolebyrolename
-
 	user := domain.User{
 		Name:     request.Name,
 		Email:    request.Email,
 		Password: request.Password,
 		RoleId:   request.RoleId,
-		RoleName: request.RoleName,
 	}
 
 	user = service.UserRepository.Create(ctx, tx, user)
@@ -56,11 +53,12 @@ func (service *UserServiceImpl) Update(ctx context.Context, request web.UserUpda
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	user, err := service.UserRepository.FindByEmail(ctx, tx, request.Email)
+	user, err := service.UserRepository.FindById(ctx, tx, request.Id)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
+	user.Id = request.Id
 	user.Name = request.Name
 	user.Email = request.Email
 	user.Password = request.Password
@@ -69,12 +67,12 @@ func (service *UserServiceImpl) Update(ctx context.Context, request web.UserUpda
 	return helper.ToUserResponse(user)
 }
 
-func (service *UserServiceImpl) Delete(ctx context.Context, userEmail string) {
+func (service *UserServiceImpl) Delete(ctx context.Context, userId int) {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	user, err := service.UserRepository.FindByEmail(ctx, tx, userEmail)
+	user, err := service.UserRepository.FindById(ctx, tx, userId)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
@@ -82,12 +80,12 @@ func (service *UserServiceImpl) Delete(ctx context.Context, userEmail string) {
 	service.UserRepository.Delete(ctx, tx, user)
 }
 
-func (service *UserServiceImpl) FindByEmail(ctx context.Context, userEmail string) web.UserResponse {
+func (service *UserServiceImpl) FindById(ctx context.Context, userId int) web.UserResponse {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	user, err := service.UserRepository.FindByEmail(ctx, tx, userEmail)
+	user, err := service.UserRepository.FindById(ctx, tx, userId)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}

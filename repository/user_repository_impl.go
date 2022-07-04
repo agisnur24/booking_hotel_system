@@ -16,8 +16,8 @@ func NewUserRepository() UserRepository {
 }
 
 func (repository UserRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, user domain.User) domain.User {
-	SQL := "insert into users(name, email, password, role) values (?, ?, ?, ?)"
-	result, err := tx.ExecContext(ctx, SQL, user.Name, user.Email, user.Password, user.RoleName)
+	SQL := "insert into users(name, email, password, role_id) values (?, ?, ?, ?)"
+	result, err := tx.ExecContext(ctx, SQL, user.Name, user.Email, user.Password, user.RoleId)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
@@ -41,24 +41,24 @@ func (repository UserRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, use
 	helper.PanicIfError(err)
 }
 
-func (repository UserRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, userEmail string) (domain.User, error) {
-	SQL := "select id, name, email, role from users where email = ?"
-	rows, err := tx.QueryContext(ctx, SQL, userEmail)
+func (repository UserRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, userId int) (domain.User, error) {
+	SQL := "select u.id, u.name, u.email, u.role_id, r.role_name from users u inner join roles r on u.role_id=r.id where u.id = ?"
+	rows, err := tx.QueryContext(ctx, SQL, userId)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
 	user := domain.User{}
 	if rows.Next() {
-		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.RoleName)
+		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.RoleId, &user.RoleName)
 		helper.PanicIfError(err)
 		return user, nil
 	} else {
-		return user, errors.New("Email is not found")
+		return user, errors.New("email is not found")
 	}
 }
 
 func (repository UserRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.User {
-	SQL := "select id, name, email, role from users"
+	SQL := "select u.id, u.name, u.email, u.role_id, r.role_name from users u inner join roles r on u.role_id=r.id"
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
 	defer rows.Close()
@@ -66,7 +66,7 @@ func (repository UserRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []
 	var users []domain.User
 	for rows.Next() {
 		user := domain.User{}
-		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.RoleName)
+		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.RoleId, &user.RoleName)
 		helper.PanicIfError(err)
 		users = append(users, user)
 	}

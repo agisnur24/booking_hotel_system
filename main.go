@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/agisnur24/booking_hotel_system.git/app"
+	"github.com/agisnur24/booking_hotel_system.git/app/routers"
 	"github.com/agisnur24/booking_hotel_system.git/controller"
 	"github.com/agisnur24/booking_hotel_system.git/helper"
 	"github.com/agisnur24/booking_hotel_system.git/middleware"
@@ -24,7 +25,8 @@ func main() {
 	roleService := service.NewRoleService(roleRepository, db, validate)
 	roleController := controller.NewRoleController(roleService)
 
-	router := app.NewRouter(userController, roleController)
+	router := routers.NewUserRouter(userController)
+	router = routers.NewRoleRouter(roleController)
 
 	server := http.Server{
 		Addr:    "localhost:3000",

@@ -11,6 +11,6 @@ type RoleRepository interface {
 	Create(ctx context.Context, tx *sql.Tx, user domain.Role) domain.Role
 	Update(ctx context.Context, tx *sql.Tx, user domain.Role) domain.Role
 	Delete(ctx context.Context, tx *sql.Tx, user domain.Role)
-	FindByRoleName(ctx context.Context, tx *sql.Tx, roleName string) (domain.Role, error)
+	FindById(ctx context.Context, tx *sql.Tx, roleId int) (domain.Role, error)
 	FindAll(ctx context.Context, tx *sql.Tx) []domain.Role
 }

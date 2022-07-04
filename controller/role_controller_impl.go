@@ -6,6 +6,7 @@ import (
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"strconv"
 )
 
 type RoleControllerImpl struct {
@@ -35,9 +36,11 @@ func (controller *RoleControllerImpl) Update(writer http.ResponseWriter, request
 	roleUpdateRequest := web.RoleUpdateRequest{}
 	helper.ReadFromRequestBody(request, &roleUpdateRequest)
 
-	roleName := params.ByName("roleName")
+	roleId := params.ByName("roleId")
+	id, err := strconv.Atoi(roleId)
+	helper.PanicIfError(err)
 
-	roleUpdateRequest.RoleName = roleName
+	roleUpdateRequest.Id = id
 
 	roleResponse := controller.RoleService.Update(request.Context(), roleUpdateRequest)
 	webResponse := web.WebResponse{
@@ -50,9 +53,11 @@ func (controller *RoleControllerImpl) Update(writer http.ResponseWriter, request
 }
 
 func (controller *RoleControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	roleName := params.ByName("roleName")
+	roleId := params.ByName("roleId")
+	id, err := strconv.Atoi(roleId)
+	helper.PanicIfError(err)
 
-	controller.RoleService.Delete(request.Context(), roleName)
+	controller.RoleService.Delete(request.Context(), id)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
@@ -61,10 +66,12 @@ func (controller *RoleControllerImpl) Delete(writer http.ResponseWriter, request
 	helper.WriteToResponseBody(writer, webResponse)
 }
 
-func (controller *RoleControllerImpl) FindByRoleName(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	userEmail := params.ByName("userEmail")
+func (controller *RoleControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	userId := params.ByName("roleId")
+	id, err := strconv.Atoi(userId)
+	helper.PanicIfError(err)
 
-	customerResponse := controller.RoleService.FindByRoleName(request.Context(), userEmail)
+	customerResponse := controller.RoleService.FindById(request.Context(), id)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",

@@ -8,9 +8,8 @@ import (
 func ToRoleResponse(role domain.Role) web.RoleResponse {
 
 	return web.RoleResponse{
-		Id:              role.Id,
-		RoleName:        role.RoleName,
-		RoleDescription: role.RoleDescription,
+		Id:       role.Id,
+		RoleName: role.RoleName,
 	}
 }
 

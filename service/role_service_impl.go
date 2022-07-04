@@ -35,8 +35,7 @@ func (service *RoleServiceImpl) Create(ctx context.Context, request web.RoleCrea
 	defer helper.CommitOrRollback(tx)
 
 	role := domain.Role{
-		RoleName:        request.RoleName,
-		RoleDescription: request.RoleDescription,
+		RoleName: request.RoleName,
 	}
 
 	role = service.RoleRepository.Create(ctx, tx, role)
@@ -51,12 +50,12 @@ func (service *RoleServiceImpl) Update(ctx context.Context, request web.RoleUpda
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	role, err := service.RoleRepository.FindByRoleName(ctx, tx, request.RoleDescription)
+	role, err := service.RoleRepository.FindById(ctx, tx, request.Id)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	role.RoleDescription = request.RoleDescription
+	role.RoleName = request.RoleName
 
 	role = service.RoleRepository.Update(ctx, tx, role)
 
@@ -64,12 +63,12 @@ func (service *RoleServiceImpl) Update(ctx context.Context, request web.RoleUpda
 
 }
 
-func (service *RoleServiceImpl) Delete(ctx context.Context, roleName string) {
+func (service *RoleServiceImpl) Delete(ctx context.Context, roleId int) {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	role, err := service.RoleRepository.FindByRoleName(ctx, tx, roleName)
+	role, err := service.RoleRepository.FindById(ctx, tx, roleId)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
@@ -77,12 +76,12 @@ func (service *RoleServiceImpl) Delete(ctx context.Context, roleName string) {
 	service.RoleRepository.Delete(ctx, tx, role)
 }
 
-func (service *RoleServiceImpl) FindByRoleName(ctx context.Context, roleName string) web.RoleResponse {
+func (service *RoleServiceImpl) FindById(ctx context.Context, roleId int) web.RoleResponse {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	role, err := service.RoleRepository.FindByRoleName(ctx, tx, roleName)
+	role, err := service.RoleRepository.FindById(ctx, tx, roleId)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}

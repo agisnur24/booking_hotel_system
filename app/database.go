@@ -9,7 +9,7 @@ import (
 )
 
 func NewDB() *sql.DB {
-	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/booking_management_system")
+	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/booking_system_management")
 	helper.PanicIfError(err)
 
 	db.SetMaxIdleConns(10)
