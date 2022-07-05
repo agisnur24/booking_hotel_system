@@ -25,13 +25,8 @@ func main() {
 	roleService := service.NewRoleService(roleRepository, db, validate)
 	roleController := controller.NewRoleController(roleService)
 
-	hotelRepository := repository.NewHotelRepository()
-	hotelService := service.NewHotelService(hotelRepository, db, validate)
-	hotelController := controller.NewHotelController(hotelService)
-
 	router := routers.NewUserRouter(userController)
 	router = routers.NewRoleRouter(roleController)
-	router = routers.NewHotelRouter(hotelController)
 
 	server := http.Server{
 		Addr:    "localhost:3000",
