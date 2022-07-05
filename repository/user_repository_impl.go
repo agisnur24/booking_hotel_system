@@ -72,5 +72,3 @@ func (repository UserRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []
 	}
 	return users
 }
-
-//test

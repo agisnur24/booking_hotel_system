@@ -1,6 +1,6 @@
 package test
 
-/*import (
+import (
 	"database/sql"
 	"encoding/json"
 	"github.com/agisnur24/booking_hotel_system.git/app/routers"
@@ -52,7 +52,7 @@ func TestCreateUserSuccess(t *testing.T) {
 	router := setupUserRouter(db)
 
 	requestBody := strings.NewReader(`{"name" : "Arie", "email" : "arieafr123@gmail.com", "password" : "aowkoakwoa", "role_id" : 1}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3306/api/users", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/users", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
 
@@ -73,4 +73,4 @@ func TestCreateUserSuccess(t *testing.T) {
 	assert.Equal(t, "arieafr123@gmail.com", responseBody["data"].(map[string]interface{})["email"])
 	assert.Equal(t, "aowkoakwoa", responseBody["data"].(map[string]interface{})["password"])
 	assert.Equal(t, 1, responseBody["data"].(map[string]interface{})["role_id"])
-}*/
+}
