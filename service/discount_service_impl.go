@@ -36,7 +36,7 @@ func (service *DiscountServiceImpl) Create(ctx context.Context, request web.Disc
 	discount := domain.Discount{
 		Rate:        request.Rate,
 		Status:      request.Status,
-		RequestDate: request.Request_Date,
+		RequestDate: request.RequestDate,
 	}
 
 	discount = service.DiscountRepository.Create(ctx, tx, discount)

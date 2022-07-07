@@ -58,7 +58,7 @@ CREATE TABLE `bookings` (
   `status` enum('on_going','canceled') NOT NULL,
   `rate` int(11) NOT NULL,
   `duration` int(11) NOT NULL,
-  `discount` int(11) NOT NULL,
+  `floor` int(11) NOT NULL,
   `total_price` int(11) NOT NULL,
   `employee_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
