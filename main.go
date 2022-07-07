@@ -33,10 +33,15 @@ func main() {
 	guestService := service.NewGuestService(guestRepository, db, validate)
 	guestController := controller.NewGuestController(guestService)
 
+	discountRepository := repository.NewDiscountRepository()
+	discountService := service.NewDiscountService(discountRepository, db, validate)
+	discountController := controller.NewDiscountController(discountService)
+
 	router := routers.NewUserRouter(userController)
 	router = routers.NewRoleRouter(roleController)
 	router = routers.NewHotelRouter(hotelController)
 	router = routers.NewGuestRouter(guestController)
+	router = routers.NewDiscountRouter(discountController)
 
 	server := http.Server{
 		Addr:    "localhost:3000",
