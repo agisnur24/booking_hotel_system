@@ -16,7 +16,6 @@ import (
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
