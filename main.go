@@ -33,10 +33,15 @@ func main() {
 	guestService := service.NewGuestService(guestRepository, db, validate)
 	guestController := controller.NewGuestController(guestService)
 
+	employeeRepository := repository.NewEmployeeRepository()
+	employeeService := service.NewEmployeeService(employeeRepository, db, validate)
+	employeeController := controller.NewEmployeeController(employeeService)
+
 	router := routers.NewUserRouter(userController)
 	router = routers.NewRoleRouter(roleController)
 	router = routers.NewHotelRouter(hotelController)
 	router = routers.NewGuestRouter(guestController)
+	router = routers.NewEmployeeRouter(employeeController)
 
 	server := http.Server{
 		Addr:    "localhost:3000",

@@ -82,11 +82,11 @@ func (controller *RoleControllerImpl) FindById(writer http.ResponseWriter, reque
 }
 
 func (controller *RoleControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	roleResponse := controller.RoleService.FindAll(request.Context())
+	roleResponses := controller.RoleService.FindAll(request.Context())
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   roleResponse,
+		Data:   roleResponses,
 	}
 
 	helper.WriteToResponseBody(writer, webResponse)

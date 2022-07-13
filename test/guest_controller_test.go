@@ -348,7 +348,7 @@ func TestListGuestsSuccess(t *testing.T) {
 	assert.Equal(t, guest2.Email, guestResponse2["email"])
 }
 
-func TestUnauthorized(t *testing.T) {
+func TestGuestUnauthorized(t *testing.T) {
 	db := setupTestGuestDB()
 	truncateGuest(db)
 	router := setupGuestRouter(db)

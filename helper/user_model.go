@@ -11,6 +11,7 @@ func ToUserResponse(user domain.User) web.UserResponse {
 		Id:       user.Id,
 		Name:     user.Name,
 		Email:    user.Email,
+		Password: user.Password,
 		RoleId:   user.RoleId,
 		RoleName: user.RoleName,
 	}
