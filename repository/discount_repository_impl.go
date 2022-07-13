@@ -22,7 +22,7 @@ func NewDiscountRepository() DiscountRepository {
 //request_date
 
 func (repository DiscountRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, discount domain.Discount) domain.Discount {
-	SQL := "insert into discounts(employee_id,rate, status, request_date,hotel_id,room_id) values (?,?, ?, ?,?,?)"
+	SQL := "insert into discounts(employee_id, rate, status, request_date,hotel_id,room_id) values (?,?, ?, ?,?,?)"
 	result, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.Rate, discount.Status, discount.RequestDate, discount.HotelId, discount.RoomId)
 	helper.PanicIfError(err)
 
@@ -34,7 +34,7 @@ func (repository DiscountRepositoryImpl) Create(ctx context.Context, tx *sql.Tx,
 }
 
 func (repository DiscountRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, discount domain.Discount) domain.Discount {
-	SQL := "update discounts set employee_id =?, rate = ?, status = ?, request_date = ?, hotel_id, room_id where id = ?"
+	SQL := "update discounts set employee_id =?, rate = ?, status = ?, request_date = ?, hotel_id=?, room_id=? where id = ?"
 	_, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.Rate, discount.Status, discount.RequestDate, discount.HotelId, discount.RoomId, discount.Id)
 	helper.PanicIfError(err)
 
@@ -48,7 +48,6 @@ func (repository DiscountRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx,
 }
 
 func (repository DiscountRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, discountId int) (domain.Discount, error) {
-	//SQL := "select u.id, u.name, u.email, u.role_id, r.role_name from users u inner join roles r on u.role_id=r.id where u.id = ?"
 	SQL := "select d.id, d.employee_id, d.hotel_id, d.room_id, d.rate, d.status, d.request_date, e.name as employee_name, h.name as hotel_name, r.name as room_name from discounts d inner join employees e on d.employee_id=e.id inner join hotels h on d.hotel_id=h.id inner join meeting_rooms r on d.room_id=r.id where d.id = ?"
 	rows, err := tx.QueryContext(ctx, SQL, discountId)
 	helper.PanicIfError(err)
@@ -60,7 +59,7 @@ func (repository DiscountRepositoryImpl) FindById(ctx context.Context, tx *sql.T
 		helper.PanicIfError(err)
 		return discount, nil
 	} else {
-		return discount, errors.New("email is not found")
+		return discount, errors.New("id not found")
 	}
 }
 

@@ -5,7 +5,7 @@ type DiscountResponse struct {
 	EmployeeId   int    `json:"employee_id"`
 	HotelId      int    `json:"hotel_id"`
 	RoomId       int    `json:"room_id"`
-	Rate         int    `json:"rate"`
+	Rate         string `json:"rate"`
 	Status       string `json:"status"`
 	RequestDate  string `json:"request_date"`
 	EmployeeName string `json:"employee_name"`

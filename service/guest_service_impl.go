@@ -12,21 +12,21 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type GuestServiceImpl struct {
-	GuestRepository repository.GuestRepository
-	DB              *sql.DB
-	validate        *validator.Validate
+type InvoiceServiceImpl struct {
+	InvoiceRepository repository.InvoiceRepository
+	DB                *sql.DB
+	validate          *validator.Validate
 }
 
-func NewGuestService(guestRepository repository.GuestRepository, DB *sql.DB, validate *validator.Validate) GuestService {
-	return &GuestServiceImpl{
-		GuestRepository: guestRepository,
-		DB:              DB,
-		validate:        validate,
+func NewInvoiceService(invoiceRepository repository.InvoiceRepository, DB *sql.DB, validate *validator.Validate) InvoiceService {
+	return &InvoiceServiceImpl{
+		InvoiceRepository: invoiceRepository,
+		DB:                DB,
+		validate:          validate,
 	}
 }
 
-func (service *GuestServiceImpl) Create(ctx context.Context, request web.GuestCreateRequest) web.GuestResponse {
+func (service *InvoiceServiceImpl) Create(ctx context.Context, request web.InvoiceCreateRequest) web.InvoiceResponse {
 	err := service.validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -34,18 +34,19 @@ func (service *GuestServiceImpl) Create(ctx context.Context, request web.GuestCr
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	guest := domain.Guest{
-		Name:         request.Name,
-		Address:      request.Address,
-		Phone_Number: request.Phone_Number,
-		Email:        request.Email,
+	invoice := domain.Invoice{
+		Invoice_Number:           request.Invoice_Number,
+		Employee_Id:              request.Employee_Id,
+		Meeting_Room_Pricings_Id: request.Meeting_Room_Pricings_Id,
+		Discount_Id:              request.Discount_Id,
+		PIC:                      request.PIC,
 	}
 
-	guest = service.GuestRepository.Create(ctx, tx, guest)
-	return helper.ToGuestResponse(guest)
+	invoice = service.InvoiceRepository.Create(ctx, tx, invoice)
+	return helper.ToInvoiceResponse(invoice)
 }
 
-func (service *GuestServiceImpl) Update(ctx context.Context, request web.GuestUpdateRequest) web.GuestResponse {
+func (service *InvoiceServiceImpl) Update(ctx context.Context, request web.InvoiceUpdateRequest) web.InvoiceResponse {
 	err := service.validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -53,53 +54,54 @@ func (service *GuestServiceImpl) Update(ctx context.Context, request web.GuestUp
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	guest, err := service.GuestRepository.FindById(ctx, tx, request.Id)
+	invoice, err := service.InvoiceRepository.FindById(ctx, tx, request.Id)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	guest.Name = request.Name
-	guest.Address = request.Address
-	guest.Phone_Number = request.Phone_Number
-	guest.Email = request.Email
+	invoice.Invoice_Number = request.Invoice_Number
+	invoice.Employee_Id = request.Employee_Id
+	invoice.Meeting_Room_Pricings_Id = request.Meeting_Room_Pricings_Id
+	invoice.Discount_Id = request.Discount_Id
+	invoice.PIC = request.PIC
 
-	guest = service.GuestRepository.Update(ctx, tx, guest)
+	invoice = service.InvoiceRepository.Update(ctx, tx, invoice)
 
-	return helper.ToGuestResponse(guest)
+	return helper.ToInvoiceResponse(invoice)
 }
 
-func (service *GuestServiceImpl) Delete(ctx context.Context, guestId int) {
+func (service *InvoiceServiceImpl) Delete(ctx context.Context, invoiceId int) {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	guest, err := service.GuestRepository.FindById(ctx, tx, guestId)
+	invoice, err := service.InvoiceRepository.FindById(ctx, tx, invoiceId)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	service.GuestRepository.Delete(ctx, tx, guest)
+	service.InvoiceRepository.Delete(ctx, tx, invoice)
 }
 
-func (service *GuestServiceImpl) FindById(ctx context.Context, guestId int) web.GuestResponse {
+func (service *InvoiceServiceImpl) FindById(ctx context.Context, invoiceId int) web.InvoiceResponse {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	guest, err := service.GuestRepository.FindById(ctx, tx, guestId)
+	invoice, err := service.InvoiceRepository.FindById(ctx, tx, invoiceId)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	return helper.ToGuestResponse(guest)
+	return helper.ToInvoiceResponse(invoice)
 }
 
-func (service *GuestServiceImpl) FindAll(ctx context.Context) []web.GuestResponse {
+func (service *InvoiceServiceImpl) FindAll(ctx context.Context) []web.InvoiceResponse {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	guests := service.GuestRepository.FindAll(ctx, tx)
+	invoices := service.InvoiceRepository.FindAll(ctx, tx)
 
-	return helper.ToGuestResponses(guests)
+	return helper.ToInvoiceResponses(invoices)
 }
