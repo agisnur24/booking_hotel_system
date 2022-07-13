@@ -1,13 +1,8 @@
 package test
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
-	"github.com/agisnur24/booking_hotel_system.git/model/domain"
-	"strconv"
-
 	"github.com/agisnur24/booking_hotel_system.git/app/routers"
 	"github.com/agisnur24/booking_hotel_system.git/controller"
 	"github.com/agisnur24/booking_hotel_system.git/helper"
@@ -15,17 +10,16 @@ import (
 	"github.com/agisnur24/booking_hotel_system.git/repository"
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/go-playground/validator/v10"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
-
 	"strings"
 	"testing"
 	"time"
 )
 
-func setupTestGuestDB() *sql.DB {
+func setupTestDiscountDB() *sql.DB {
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/booking_management_system")
 	helper.PanicIfError(err)
 
@@ -37,28 +31,28 @@ func setupTestGuestDB() *sql.DB {
 	return db
 }
 
-func setupGuestRouter(db *sql.DB) http.Handler {
+func setupDiscountRouter(db *sql.DB) http.Handler {
 	validate := validator.New()
-	guestRepository := repository.NewGuestRepository()
-	guestService := service.NewGuestService(guestRepository, db, validate)
-	guestController := controller.NewGuestController(guestService)
+	discountRepository := repository.NewDiscountRepository()
+	discountService := service.NewDiscountService(discountRepository, db, validate)
+	discountController := controller.NewDiscountController(discountService)
 
-	router := routers.NewGuestRouter(guestController)
+	router := routers.NewDiscountRouter(discountController)
 
 	return middleware.NewAuthMiddleware(router)
 }
 
-func truncateGuest(db *sql.DB) {
+func truncateDiscount(db *sql.DB) {
 	db.Exec("TRUNCATE guests")
 }
 
-func TestCreateGuestSuccess(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
-	router := setupGuestRouter(db)
+func TestCreateDiscountSuccess(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
+	router := setupDiscountRouter(db)
 
-	requestBody := strings.NewReader(`{"name" : "pokaliswali","address":"Belum Jadi","phone_number":"089876545","email":"imey@gmail.com"}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/guests", requestBody)
+	requestBody := strings.NewReader(`{"name" : "pokaliswali","address":"Belum Jadi","phone_number":"089876545","email":"imey@gmail.com"}`) // belum memasukan data asli
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/discounts", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
 
@@ -81,10 +75,10 @@ func TestCreateGuestSuccess(t *testing.T) {
 	assert.Equal(t, "imey@gmail.com", responseBody["data"].(map[string]interface{})["email"])
 }
 
-func TestCreateGuestFailed(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
-	router := setupGuestRouter(db)
+/*func TestCreateDiscountFailed(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
+	router := setupDiscountRouter(db)
 
 	requestBody := strings.NewReader(`{"name" : ""}`)
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/guests", requestBody)
@@ -106,21 +100,23 @@ func TestCreateGuestFailed(t *testing.T) {
 	assert.Equal(t, "BAD REQUEST", responseBody["status"])
 }
 
-func TestUpdateGuestSuccess(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
+func TestUpdateDiscountSuccess(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
 
 	tx, _ := db.Begin()
-	guestRepository := repository.NewGuestRepository()
-	guest := guestRepository.Create(context.Background(), tx, domain.Guest{
-		Name: "Gadget",
+	discountRepository := repository.NewDiscountRepository()
+	discount := discountRepository.Create(context.Background(), tx, domain.Discount{
+		Rate:        2, // int
+		Status:      "",
+		RequestDate: "",
 	})
 	tx.Commit()
 
-	router := setupGuestRouter(db)
+	router := setupDiscountRouter(db)
 
 	requestBody := strings.NewReader(`{"name" : "pokaliswali","address":"Belum Jadi","phone_number":"089876545","email":"imey@gmail.com"}`)
-	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/guests/"+strconv.Itoa(guest.Id), requestBody)
+	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/discounts/"+strconv.Itoa(discount.Id), requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
 
@@ -137,8 +133,7 @@ func TestUpdateGuestSuccess(t *testing.T) {
 
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
-	assert.Equal(t, guest.Id, int(responseBody["data"].(map[string]interface{})["id"].(float64)))
-	//assert.Equal(t, "Gadget", responseBody["data"].(map[string]interface{})["name"]) data asli
+	assert.Equal(t, discount.Id, int(responseBody["data"].(map[string]interface{})["id"].(float64)))
 
 	assert.Equal(t, "pokaliswali", responseBody["data"].(map[string]interface{})["name"])
 	assert.Equal(t, "Belum Jadi", responseBody["data"].(map[string]interface{})["address"])
@@ -146,21 +141,23 @@ func TestUpdateGuestSuccess(t *testing.T) {
 	assert.Equal(t, "imey@gmail.com", responseBody["data"].(map[string]interface{})["email"])
 }
 
-func TestUpdateGuestFailed(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
+func TestUpdateDiscountFailed(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
 
 	tx, _ := db.Begin()
-	guestRepository := repository.NewGuestRepository()
-	guest := guestRepository.Create(context.Background(), tx, domain.Guest{
-		Name: "Gadget",
+	discountRepository := repository.NewDiscountRepository()
+	discount := discountRepository.Create(context.Background(), tx, domain.Discount{
+		Rate:        2, // int
+		Status:      "",
+		RequestDate: "",
 	})
 	tx.Commit()
 
-	router := setupGuestRouter(db)
+	router := setupDiscountRouter(db)
 
 	requestBody := strings.NewReader(`{"name" : ""}`)
-	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/guests/"+strconv.Itoa(guest.Id), requestBody)
+	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/discounts/"+strconv.Itoa(discount.Id), requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
 
@@ -179,20 +176,22 @@ func TestUpdateGuestFailed(t *testing.T) {
 	assert.Equal(t, "BAD REQUEST", responseBody["status"])
 }
 
-func TestGetGuestSuccess(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
+func TestGetDiscountSuccess(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
 
 	tx, _ := db.Begin()
-	guestRepository := repository.NewGuestRepository()
-	guest := guestRepository.Create(context.Background(), tx, domain.Guest{
-		Name: "Gadget",
+	discountRepository := repository.NewDiscountRepository()
+	discount := discountRepository.Create(context.Background(), tx, domain.Discount{
+		Rate:        2, // int
+		Status:      "",
+		RequestDate: "",
 	})
 	tx.Commit()
 
-	router := setupGuestRouter(db)
+	router := setupDiscountRouter(db)
 
-	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/guests/"+strconv.Itoa(guest.Id), nil)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/discounts/"+strconv.Itoa(discount.Id), nil)
 	request.Header.Add("X-API-Key", "RAHASIA")
 
 	recorder := httptest.NewRecorder()
@@ -208,19 +207,19 @@ func TestGetGuestSuccess(t *testing.T) {
 
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
-	assert.Equal(t, guest.Id, int(responseBody["data"].(map[string]interface{})["id"].(float64)))
-	assert.Equal(t, guest.Name, responseBody["data"].(map[string]interface{})["name"])
-	assert.Equal(t, guest.Address, responseBody["data"].(map[string]interface{})["address"])
-	assert.Equal(t, guest.Phone_Number, responseBody["data"].(map[string]interface{})["phone_number"])
-	assert.Equal(t, guest.Email, responseBody["data"].(map[string]interface{})["email"])
+	assert.Equal(t, discount.Id, int(responseBody["data"].(map[string]interface{})["id"].(float64)))
+	assert.Equal(t, discount.Name, responseBody["data"].(map[string]interface{})["name"])
+	assert.Equal(t, discount.Address, responseBody["data"].(map[string]interface{})["address"])
+	assert.Equal(t, discount.Phone_Number, responseBody["data"].(map[string]interface{})["phone_number"])
+	assert.Equal(t, discount.Email, responseBody["data"].(map[string]interface{})["email"])
 }
 
-func TestGetGuestFailed(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
-	router := setupGuestRouter(db)
+func TestGetDiscountFailed(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
+	router := setupDiscountRouter(db)
 
-	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/guests/404", nil)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/discounts/404", nil)
 	request.Header.Add("X-API-Key", "RAHASIA")
 
 	recorder := httptest.NewRecorder()
@@ -238,20 +237,22 @@ func TestGetGuestFailed(t *testing.T) {
 	assert.Equal(t, "NOT FOUND", responseBody["status"])
 }
 
-func TestDeleteGuestSuccess(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
+func TestDeleteDiscountSuccess(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
 
 	tx, _ := db.Begin()
-	guestRepository := repository.NewGuestRepository()
-	guest := guestRepository.Create(context.Background(), tx, domain.Guest{
-		Name: "Gadget",
+	discountRepository := repository.NewDiscountRepository()
+	discount := discountRepository.Create(context.Background(), tx, domain.Discount{
+		Rate:        2, // int
+		Status:      "",
+		RequestDate: "",
 	})
 	tx.Commit()
 
 	router := setupGuestRouter(db)
 
-	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/guests/"+strconv.Itoa(guest.Id), nil)
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/discounts/"+strconv.Itoa(discount.Id), nil)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
 
@@ -270,12 +271,12 @@ func TestDeleteGuestSuccess(t *testing.T) {
 	assert.Equal(t, "OK", responseBody["status"])
 }
 
-func TestDeleteGuestFailed(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
-	router := setupGuestRouter(db)
+func TestDeleteDiscountFailed(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
+	router := setupDiscountRouter(db)
 
-	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/guests/404", nil)
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/discounts/404", nil)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
 
@@ -294,23 +295,23 @@ func TestDeleteGuestFailed(t *testing.T) {
 	assert.Equal(t, "NOT FOUND", responseBody["status"])
 }
 
-func TestListGuestsSuccess(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
+func TestListDiscountsSuccess(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
 
 	tx, _ := db.Begin()
-	guestRepository := repository.NewGuestRepository()
-	guest1 := guestRepository.Create(context.Background(), tx, domain.Guest{
+	discountRepository := repository.NewDiscountRepository()
+	discount1 := discountRepository.Create(context.Background(), tx, domain.Discount{
 		Name: "Gadget",
 	})
-	guest2 := guestRepository.Create(context.Background(), tx, domain.Guest{
+	discount2 := discountRepository.Create(context.Background(), tx, domain.Discount{
 		Name: "Computer",
 	})
 	tx.Commit()
 
-	router := setupGuestRouter(db)
+	router := setupDiscountRouter(db)
 
-	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/guests", nil)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/discounts", nil)
 	request.Header.Add("X-API-Key", "RAHASIA")
 
 	recorder := httptest.NewRecorder()
@@ -329,30 +330,30 @@ func TestListGuestsSuccess(t *testing.T) {
 
 	fmt.Println(responseBody)
 
-	var guests = responseBody["data"].([]interface{})
+	var discounts = responseBody["data"].([]interface{})
 
-	guestResponse1 := guests[0].(map[string]interface{})
-	guestResponse2 := guests[1].(map[string]interface{})
+	discountResponse1 := discounts[0].(map[string]interface{})
+	discountResponse2 := discounts[1].(map[string]interface{})
 
-	assert.Equal(t, guest1.Id, int(guestResponse1["id"].(float64)))
-	assert.Equal(t, guest1.Name, guestResponse1["name"])
-	assert.Equal(t, guest1.Address, guestResponse1["address"])
-	assert.Equal(t, guest1.Phone_Number, guestResponse1["phone_number"])
-	assert.Equal(t, guest1.Email, guestResponse1["email"])
+	assert.Equal(t, discount1.Id, int(discountResponse1["id"].(float64)))
+	assert.Equal(t, discount1.Name, discountResponse1["name"])
+	assert.Equal(t, discount1.Address, discountResponse1["address"])
+	assert.Equal(t, discount1.Phone_Number, discountResponse1["phone_number"])
+	assert.Equal(t, discount1.Email, discountResponse1["email"])
 
-	assert.Equal(t, guest2.Id, int(guestResponse2["id"].(float64)))
-	assert.Equal(t, guest2.Name, guestResponse2["name"])
-	assert.Equal(t, guest2.Address, guestResponse2["address"])
-	assert.Equal(t, guest2.Phone_Number, guestResponse2["phone_number"])
-	assert.Equal(t, guest2.Email, guestResponse2["email"])
+	assert.Equal(t, discount2.Id, int(discountResponse2["id"].(float64)))
+	assert.Equal(t, discount2.Name, discountResponse2["name"])
+	assert.Equal(t, discount2.Address, discountResponse2["address"])
+	assert.Equal(t, discount2.Phone_Number, discountResponse2["phone_number"])
+	assert.Equal(t, discount2.Email, discountResponse2["email"])
 }
 
-func TestGuestUnauthorized(t *testing.T) {
-	db := setupTestGuestDB()
-	truncateGuest(db)
-	router := setupGuestRouter(db)
+func TestUnauthorizedDiscount(t *testing.T) {
+	db := setupTestDiscountDB()
+	truncateDiscount(db)
+	router := setupDiscountRouter(db)
 
-	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/guests", nil)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/discounts", nil)
 	request.Header.Add("X-API-Key", "SALAH")
 
 	recorder := httptest.NewRecorder()
@@ -369,3 +370,4 @@ func TestGuestUnauthorized(t *testing.T) {
 	assert.Equal(t, 401, int(responseBody["code"].(float64)))
 	assert.Equal(t, "UNAUTHORIZED", responseBody["status"])
 }
+*/
