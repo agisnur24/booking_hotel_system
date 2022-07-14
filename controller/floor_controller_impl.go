@@ -13,9 +13,9 @@ type FloorControllerImpl struct {
 	FloorService service.FloorService
 }
 
-func NewFloorController(FloorServce service.FloorService) FloorController {
+func NewFloorController(FloorService service.FloorService) FloorController {
 	return &FloorControllerImpl{
-		FloorService: FloorServce,
+		FloorService: FloorService,
 	}
 }
 
@@ -72,11 +72,11 @@ func (controller *FloorControllerImpl) FindById(writer http.ResponseWriter, requ
 	id, err := strconv.Atoi(floorId)
 	helper.PanicIfError(err)
 
-	discountResponse := controller.FloorService.FindById(request.Context(), id)
+	floorResponse := controller.FloorService.FindById(request.Context(), id)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   discountResponse,
+		Data:   floorResponse,
 	}
 
 	helper.WriteToResponseBody(writer, webResponse)
