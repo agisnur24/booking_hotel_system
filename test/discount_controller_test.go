@@ -51,9 +51,7 @@ func TestCreateDiscountSuccess(t *testing.T) {
 	truncateDiscount(db)
 	router := setupDiscountRouter(db)
 
-	//employee_id" : 1,"hotel_id": 1, "room_id": 1,
-
-	requestBody := strings.NewReader(`{"employee_id" : 1,"hotel_id": 1, "room_id": 1, "rate":"10%","status" : "approve,rejected,waiting" , "request_date" : "rabu"}`) // belum memasukan data asli
+	requestBody := strings.NewReader(`{"employee_id" : 1,"hotel_id": 1, "room_id": 1, "rate":"10%","status" : "approve,rejected,waiting" , "request_date" : "2022-07-07"}`) // belum memasukan data asli
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/discounts", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
@@ -71,9 +69,9 @@ func TestCreateDiscountSuccess(t *testing.T) {
 
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
-	assert.Equal(t, "employee_id", responseBody["data"].(map[string]interface{})["employee_id"])
-	assert.Equal(t, "hotel_id", responseBody["data"].(map[string]interface{})["hotel_id"])
-	assert.Equal(t, "room_id", responseBody["data"].(map[string]interface{})["room_id"])
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["employee_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["hotel_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["room_id"].(float64)))
 	assert.Equal(t, "5", responseBody["data"].(map[string]interface{})["rate"])
 	assert.Equal(t, "approve,rejected,waiting", responseBody["data"].(map[string]interface{})["status"])
 	assert.Equal(t, "2022-07-07", responseBody["data"].(map[string]interface{})["request_date"])

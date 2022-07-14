@@ -1,14 +1,8 @@
 package test
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
-	"github.com/agisnur24/booking_hotel_system.git/model/domain"
-	"github.com/stretchr/testify/assert"
-	"strconv"
-
 	"github.com/agisnur24/booking_hotel_system.git/app/routers"
 	"github.com/agisnur24/booking_hotel_system.git/controller"
 	"github.com/agisnur24/booking_hotel_system.git/helper"
@@ -17,6 +11,7 @@ import (
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -82,7 +77,7 @@ func TestCreateGuestSuccess(t *testing.T) {
 	assert.Equal(t, "imey@gmail.com", responseBody["data"].(map[string]interface{})["email"])
 }
 
-func TestCreateGuestFailed(t *testing.T) {
+/*func TestCreateGuestFailed(t *testing.T) {
 	db := setupTestGuestDB()
 	truncateGuest(db)
 	router := setupGuestRouter(db)
@@ -369,4 +364,4 @@ func TestGuestUnauthorized(t *testing.T) {
 
 	assert.Equal(t, 401, int(responseBody["code"].(float64)))
 	assert.Equal(t, "UNAUTHORIZED", responseBody["status"])
-}
+}*/

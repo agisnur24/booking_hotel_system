@@ -48,14 +48,15 @@ func (repository InvoiceRepoitoryImpl) Delete(ctx context.Context, tx *sql.Tx, i
 
 func (repository InvoiceRepoitoryImpl) FindById(ctx context.Context, tx *sql.Tx, invoiceId int) (domain.Invoice, error) {
 
-	SQL := "select id, name, address, phone_number,email from invoices where id =?"
+	SQL := "select i.id, i.invoice_number, i.employee_id, i.meeting_room_pricings_id, i.discount_id, i.pic, e.name, m.price, m.price_type, d.rate, d.status from invoices i inner join employees e on i.employee_id=e.id inner join discounts d on i.discount_id=d.id inner join meeting_room_pricings m  on i.meeting_room_pricings_id=m.id where i.id = ?"
+
 	rows, err := tx.QueryContext(ctx, SQL, invoiceId)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
 	invoice := domain.Invoice{}
 	if rows.Next() {
-		err := rows.Scan(&invoice.Id, &invoice.Name, &invoice.Address, &invoice.Phone_Number, &invoice.Email)
+		err := rows.Scan(&invoice.Id, &invoice.Invoice_Number, &invoice.Employee_Id, &invoice.Meeting_Room_Pricings_Id, &invoice.Discount_Id, &invoice.PIC, &invoice.Employee_Name, &invoice.Price, &invoice.Price_Type, &invoice.Discount_Rate, &invoice.Discount_Status)
 		helper.PanicIfError(err)
 
 		return invoice, nil
@@ -67,7 +68,7 @@ func (repository InvoiceRepoitoryImpl) FindById(ctx context.Context, tx *sql.Tx,
 
 func (repository InvoiceRepoitoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.Invoice {
 
-	SQL := "select id,name,address,phone_number,email from invoices"
+	SQL := "select i.id, i.invoice_number, i.employee_id, i.meeting_room_pricings_id, i.discount_id, i.pic, e.name, m.price, m.price_type, d.rate, d.status from invoices i inner join employees e on i.employee_id=e.id inner join discounts d on i.discount_id=d.id inner join meeting_room_pricings m  on i.meeting_room_pricings_id=m.id"
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
 	defer rows.Close()
@@ -75,7 +76,7 @@ func (repository InvoiceRepoitoryImpl) FindAll(ctx context.Context, tx *sql.Tx) 
 	var invoices []domain.Invoice
 	for rows.Next() {
 		invoice := domain.Invoice{}
-		err := rows.Scan(&invoice.Id, &invoice.Name, &invoice.Address, &invoice.Phone_Number, &invoice.Email)
+		err := rows.Scan(&invoice.Id, &invoice.Invoice_Number, &invoice.Employee_Id, &invoice.Meeting_Room_Pricings_Id, &invoice.Discount_Id, &invoice.PIC, &invoice.Employee_Name, &invoice.Price, &invoice.Price_Type, &invoice.Discount_Rate, &invoice.Discount_Status)
 		helper.PanicIfError(err)
 		invoices = append(invoices, invoice)
 	}
@@ -83,79 +84,3 @@ func (repository InvoiceRepoitoryImpl) FindAll(ctx context.Context, tx *sql.Tx) 
 	return invoices
 
 }
-
-/*type GuestRepoitoryImpl struct {
-}
-
-func NewGuestRepository() GuestRepository {
-	return &GuestRepoitoryImpl{}
-}
-
-func (repository GuestRepoitoryImpl) Create(ctx context.Context, tx *sql.Tx, guest domain.Guest) domain.Guest {
-
-	SQL := "insert into guests(name, address, phone_number, email) value(?,?,?,?)"
-	result, err := tx.ExecContext(ctx, SQL, guest.Name, guest.Address, guest.Phone_Number, guest.Email)
-	helper.PanicIfError(err)
-
-	id, err := result.LastInsertId()
-	helper.PanicIfError(err)
-
-	guest.Id = int(id)
-
-	return guest
-}
-
-func (repository GuestRepoitoryImpl) Update(ctx context.Context, tx *sql.Tx, guest domain.Guest) domain.Guest {
-
-	SQL := "update guests set name = ?, address = ?, phone_number=?, email =?  where id = ?"
-	_, err := tx.ExecContext(ctx, SQL, guest.Name, guest.Address, guest.Phone_Number, guest.Email, guest.Id)
-	helper.PanicIfError(err)
-
-	return guest
-}
-
-func (repository GuestRepoitoryImpl) Delete(ctx context.Context, tx *sql.Tx, guest domain.Guest) {
-
-	SQL := "delete from guests where id = ?"
-	_, err := tx.ExecContext(ctx, SQL, guest.Id)
-	helper.PanicIfError(err)
-
-}
-
-func (repository GuestRepoitoryImpl) FindById(ctx context.Context, tx *sql.Tx, guestId int) (domain.Guest, error) {
-
-	SQL := "select id, name, address, phone_number,email from guests where id =?"
-	rows, err := tx.QueryContext(ctx, SQL, guestId)
-	helper.PanicIfError(err)
-	defer rows.Close()
-
-	guest := domain.Guest{}
-	if rows.Next() {
-		err := rows.Scan(&guest.Id, &guest.Name, &guest.Address, &guest.Phone_Number, &guest.Email)
-		helper.PanicIfError(err)
-
-		return guest, nil
-	} else {
-
-		return guest, errors.New("guest is not found")
-	}
-}
-
-func (repository GuestRepoitoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.Guest {
-
-	SQL := "select id,name,address,phone_number,email from guests"
-	rows, err := tx.QueryContext(ctx, SQL)
-	helper.PanicIfError(err)
-	defer rows.Close()
-
-	var guests []domain.Guest
-	for rows.Next() {
-		guest := domain.Guest{}
-		err := rows.Scan(&guest.Id, &guest.Name, &guest.Address, &guest.Phone_Number, &guest.Email)
-		helper.PanicIfError(err)
-		guests = append(guests, guest)
-	}
-
-	return guests
-
-}*/

@@ -5,6 +5,6 @@ type DiscountCreateRequest struct {
 	HotelId     int    `validate:"required"json:"hotel_id"`
 	RoomId      int    `validate:"required"json:"room_id"`
 	Rate        string `validate:"required,min=1,max=10"json:"rate"`
-	Status      string `validate:"required,min=1,max=100"json:"status"`
+	Status      string `validate:"required,min=1,max=10"json:"status"`
 	RequestDate string `validate:"required,min=1,max=100"json:"request_date"`
 }

@@ -58,7 +58,9 @@ func (service *DiscountServiceImpl) Update(ctx context.Context, request web.Disc
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
-
+	discount.EmployeeId = request.EmployeeId
+	discount.HotelId = request.HotelId
+	discount.RoomId = request.RoomId
 	discount.Rate = request.Rate
 	discount.Status = request.Status
 	discount.RequestDate = request.RequestDate

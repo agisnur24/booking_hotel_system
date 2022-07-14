@@ -20,7 +20,6 @@ func NewDiscountController(discountService service.DiscountService) DiscountCont
 }
 
 func (controller *DiscountControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
 	discountCreateRequest := web.DiscountCreateRequest{}
 	helper.ReadFromRequestBody(request, &discountCreateRequest)
 
@@ -35,7 +34,6 @@ func (controller *DiscountControllerImpl) Create(writer http.ResponseWriter, req
 }
 
 func (controller *DiscountControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
 	discountUpdateRequest := web.DiscountUpdateRequest{}
 	helper.ReadFromRequestBody(request, &discountUpdateRequest)
 

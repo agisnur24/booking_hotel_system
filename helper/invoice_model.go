@@ -13,11 +13,11 @@ func ToInvoiceResponse(invoice domain.Invoice) web.InvoiceResponse {
 		Meeting_Room_Pricings_Id: invoice.Meeting_Room_Pricings_Id,
 		Discount_Id:              invoice.Discount_Id,
 		PIC:                      invoice.PIC,
-		Employee_Name : invoice.Employee_Name,
-		Price : invoice.Price,
-		Price_Type : invoice.Price_Type,
-		Discount _Rate : invoice.Discount_Rate,
-		Discount_Status : invoice.Discount_Id,
+		Employee_Name:            invoice.Employee_Name,
+		Price:                    invoice.Price,
+		Price_Type:               invoice.Price_Type,
+		Discount_Rate:            invoice.Discount_Rate,
+		Discount_Status:          invoice.Discount_Status,
 	}
 }
 

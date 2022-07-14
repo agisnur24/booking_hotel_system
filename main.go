@@ -37,12 +37,16 @@ func main() {
 	bookingService := service.NewBookingService(bookingRepository, db, validate)
 	bookingController := controller.NewBookingController(bookingService)
 
+	discountRepository := repository.NewDiscountRepository()
+	discountService := service.NewDiscountService(discountRepository, db, validate)
+	discountController := controller.NewDiscountController(discountService)
+
 	router := routers.NewUserRouter(userController)
 	router = routers.NewRoleRouter(roleController)
 	router = routers.NewHotelRouter(hotelController)
 	router = routers.NewInvoiceRouter(invoiceController)
 	router = routers.NewBookingRouter(bookingController)
-
+	router = routers.NewDiscountRouter(discountController)
 	server := http.Server{
 		Addr:    "localhost:3000",
 		Handler: middleware.NewAuthMiddleware(router),

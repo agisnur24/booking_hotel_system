@@ -7,9 +7,9 @@ type Invoice struct {
 	Meeting_Room_Pricings_Id int
 	Discount_Id              int
 	PIC                      string
-	/*Employee_Name            string
+	Employee_Name            string
 	Price                    int
 	Price_Type               int
 	Discount_Rate            string
-	Discount_Status          string*/
+	Discount_Status          string
 }

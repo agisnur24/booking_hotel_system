@@ -2,10 +2,10 @@ package web
 
 type DiscountUpdateRequest struct {
 	Id          int    `validate:"required"`
-	EmployeeId  int    `validate:"required" json:"employeeid"`
-	HotelId     int    `validate:"required" json:"hotelid"`
-	RoomId      int    `validate:"required" json:"roomid"`
+	EmployeeId  int    `validate:"required" json:"employee_id"`
+	HotelId     int    `validate:"required" json:"hotel_id"`
+	RoomId      int    `validate:"required" json:"room_id"`
 	Rate        string `validate:"required,min=1,max=10" json:"rate"`
-	Status      string `validate:"required,min=1,max=100"json:"status"`
-	RequestDate string `validate:"required,min=1,max=100"json:"requestdate"`
+	Status      string `validate:"required,min=1,max=10"json:"status"`
+	RequestDate string `validate:"required,min=1,max=100"json:"request_date"`
 }

@@ -21,10 +21,9 @@ func ToDiscountResponse(discount domain.Discount) web.DiscountResponse {
 }
 
 func ToDiscountResponses(discounts []domain.Discount) []web.DiscountResponse {
-
-	var discountresponses []web.DiscountResponse
+	var discountResponses []web.DiscountResponse
 	for _, discount := range discounts {
-		discountresponses = append(discountresponses, ToDiscountResponse(discount))
+		discountResponses = append(discountResponses, ToDiscountResponse(discount))
 	}
-	return discountresponses
+	return discountResponses
 }

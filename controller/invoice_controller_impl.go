@@ -21,7 +21,7 @@ func NewInvoiceController(invoiceService service.InvoiceService) InvoiceControll
 
 func (controller *InvoiceControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 
-	invoiceCreateRequest := invoice.InvoiceCreateRequest{}
+	invoiceCreateRequest := web.InvoiceCreateRequest{}
 	helper.ReadFromRequestBody(request, &invoiceCreateRequest)
 
 	invoiceResponse := controller.InvoiceService.Create(request.Context(), invoiceCreateRequest)
@@ -31,12 +31,12 @@ func (controller *InvoiceControllerImpl) Create(writer http.ResponseWriter, requ
 		Data:   invoiceResponse,
 	}
 
-	helper.WriterToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, webResponse)
 }
 
 func (controller *InvoiceControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 
-	invoiceUpdateRequest := invoice.InvoiceUpdateRequest{}
+	invoiceUpdateRequest := web.InvoiceUpdateRequest{}
 	helper.ReadFromRequestBody(request, &invoiceUpdateRequest)
 
 	invoiceId := params.ByName("guestId")
@@ -52,7 +52,7 @@ func (controller *InvoiceControllerImpl) Update(writer http.ResponseWriter, requ
 		Data:   invoiceResponse,
 	}
 
-	helper.WriterToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, webResponse)
 }
 
 func (controller *InvoiceControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -67,7 +67,7 @@ func (controller *InvoiceControllerImpl) Delete(writer http.ResponseWriter, requ
 		Status: "OK",
 	}
 
-	helper.WriterToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, webResponse)
 }
 
 func (controller *InvoiceControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -83,7 +83,7 @@ func (controller *InvoiceControllerImpl) FindById(writer http.ResponseWriter, re
 		Data:   invoiceResponse,
 	}
 
-	helper.WriterToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, webResponse)
 }
 
 func (controller *InvoiceControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -95,94 +95,5 @@ func (controller *InvoiceControllerImpl) FindAll(writer http.ResponseWriter, req
 		Data:   invoiceResponses,
 	}
 
-	helper.WriterToResponseBody(writer, webResponse)
-}
-
-/*type GuestControllerImpl struct {
-	GuestService service.GuestService
-}
-
-func NewGuestController(guestService service.GuestService) GuestController {
-	return &GuestControllerImpl{
-		GuestService: guestService,
-	}
-}
-
-func (controller *GuestControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
-	guestCreateRequest := web.GuestCreateRequest{}
-	helper.ReadFromRequestBody(request, &guestCreateRequest)
-
-	guestResponse := controller.GuestService.Create(request.Context(), guestCreateRequest)
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
-		Data:   guestResponse,
-	}
-
 	helper.WriteToResponseBody(writer, webResponse)
 }
-
-func (controller *GuestControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
-	guestUpdateRequest := web.GuestUpdateRequest{}
-	helper.ReadFromRequestBody(request, &guestUpdateRequest)
-
-	guestId := params.ByName("guestId")
-	id, err := strconv.Atoi(guestId)
-	helper.PanicIfError(err)
-
-	guestUpdateRequest.Id = id
-
-	guestResponse := controller.GuestService.Update(request.Context(), guestUpdateRequest)
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
-		Data:   guestResponse,
-	}
-
-	helper.WriteToResponseBody(writer, webResponse)
-}
-
-func (controller *GuestControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
-	guestId := params.ByName("guestId")
-	id, err := strconv.Atoi(guestId)
-	helper.PanicIfError(err)
-
-	controller.GuestService.Delete(request.Context(), id)
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
-	}
-
-	helper.WriteToResponseBody(writer, webResponse)
-}
-
-func (controller *GuestControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
-	guestId := params.ByName("guestId")
-	id, err := strconv.Atoi(guestId)
-	helper.PanicIfError(err)
-
-	guestResponse := controller.GuestService.FindById(request.Context(), id)
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
-		Data:   guestResponse,
-	}
-
-	helper.WriteToResponseBody(writer, webResponse)
-}
-
-func (controller *GuestControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
-	guestResponses := controller.GuestService.FindAll(request.Context())
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
-		Data:   guestResponses,
-	}
-
-	helper.WriteToResponseBody(writer, webResponse)
-}*/
