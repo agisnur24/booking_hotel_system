@@ -42,23 +42,23 @@ func (repository UserRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, use
 }
 
 func (repository UserRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, userId int) (domain.User, error) {
-	SQL := "select u.id, u.name, u.email, u.role_id, r.role_name from users u inner join roles r on u.role_id=r.id where u.id = ?"
+	SQL := "select u.id, u.name, u.email, u.password, u.role_id, r.role_name from users u inner join roles r on u.role_id=r.id where u.id = ?"
 	rows, err := tx.QueryContext(ctx, SQL, userId)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
 	user := domain.User{}
 	if rows.Next() {
-		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.RoleId, &user.RoleName)
+		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.RoleId, &user.RoleName)
 		helper.PanicIfError(err)
 		return user, nil
 	} else {
-		return user, errors.New("email is not found")
+		return user, errors.New("user is not found")
 	}
 }
 
 func (repository UserRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.User {
-	SQL := "select u.id, u.name, u.email, u.role_id, r.role_name from users u inner join roles r on u.role_id=r.id"
+	SQL := "select u.id, u.name, u.email, u.password, u.role_id, r.role_name from users u inner join roles r on u.role_id=r.id"
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
 	defer rows.Close()
@@ -66,7 +66,7 @@ func (repository UserRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []
 	var users []domain.User
 	for rows.Next() {
 		user := domain.User{}
-		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.RoleId, &user.RoleName)
+		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.RoleId, &user.RoleName)
 		helper.PanicIfError(err)
 		users = append(users, user)
 	}

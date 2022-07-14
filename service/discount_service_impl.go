@@ -32,18 +32,11 @@ func (service *DiscountServiceImpl) Create(ctx context.Context, request web.Disc
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
-	// Id           int
-	//	EmployeeId   int
-	//	HotelId      int
-	//	RoomId       int
-	//	Rate         int
-	//	Status       string
-	//	RequestDate  string
-	//	EmployeeName string
-	//	HotelName    string
-	//	RoomName
 
 	discount := domain.Discount{
+		EmployeeId:  request.EmployeeId,
+		HotelId:     request.HotelId,
+		RoomId:      request.RoomId,
 		Rate:        request.Rate,
 		Status:      request.Status,
 		RequestDate: request.RequestDate,

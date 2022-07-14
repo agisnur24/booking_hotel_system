@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/agisnur24/booking_hotel_system.git/model/domain"
+	"github.com/stretchr/testify/assert"
 	"strconv"
 
 	"github.com/agisnur24/booking_hotel_system.git/app/routers"
@@ -16,7 +17,6 @@ import (
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -348,7 +348,7 @@ func TestListGuestsSuccess(t *testing.T) {
 	assert.Equal(t, guest2.Email, guestResponse2["email"])
 }
 
-func TestUnauthorized(t *testing.T) {
+func TestGuestUnauthorized(t *testing.T) {
 	db := setupTestGuestDB()
 	truncateGuest(db)
 	router := setupGuestRouter(db)

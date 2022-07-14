@@ -53,7 +53,7 @@ func (repository HotelRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, 
 		helper.PanicIfError(err)
 		return hotel, nil
 	} else {
-		return hotel, errors.New("email is not found")
+		return hotel, errors.New("hotel is not found")
 	}
 }
 

@@ -5,7 +5,7 @@ type Discount struct {
 	EmployeeId   int
 	HotelId      int
 	RoomId       int
-	Rate         int
+	Rate         string
 	Status       string
 	RequestDate  string
 	EmployeeName string

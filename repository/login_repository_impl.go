@@ -13,8 +13,8 @@ func NewLoginRepository() LoginRepository {
 	return &loginRepositoryImpl{}
 }
 
-func (repository *loginRepositoryImpl) Login(db *sql.DB, login *domain.LoginDomain) (*domain.LoginDomain, error) {
-	SQL := `SELECT username, password FROM public.login WHERE username = $1 AND password = $2`
+func (repository *loginRepositoryImpl) LoginByEmail(db *sql.DB, login *domain.LoginDomain) (*domain.LoginDomain, error) {
+	SQL := `SELECT email, password FROM users WHERE email = ?`
 	row, err := db.Query(SQL, login.Username, login.Password)
 
 	domain := new(domain.LoginDomain)
@@ -37,9 +37,9 @@ func (repository *loginRepositoryImpl) Login(db *sql.DB, login *domain.LoginDoma
 	return nil, errors.New("wrong username or password")
 }
 
-func (repository *loginRepositoryImpl) CreateLogin(db *sql.DB, login *domain.LoginDomain) (*domain.LoginDomain, error) {
-	SQL := `INSERT INTO public.login (username, password) VALUES ($1, $2)`
-	_, err := db.Exec(SQL, login.Username, login.Password)
+func (repository *loginRepositoryImpl) Register(db *sql.DB, login *domain.LoginDomain) (*domain.LoginDomain, error) {
+	SQL := `INSERT INTO users (username, email, password) VALUES (?,?,?)`
+	_, err := db.Exec(SQL, login.Username, Login.Email login.Password)
 
 	if err != nil {
 		return nil, errors.New("username already exist")

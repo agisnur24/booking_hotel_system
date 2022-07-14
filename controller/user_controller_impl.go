@@ -83,11 +83,11 @@ func (controller *UserControllerImpl) FindById(writer http.ResponseWriter, reque
 }
 
 func (controller *UserControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	customerResponse := controller.UserService.FindAll(request.Context())
+	userResponses := controller.UserService.FindAll(request.Context())
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   customerResponse,
+		Data:   userResponses,
 	}
 
 	helper.WriteToResponseBody(writer, webResponse)
