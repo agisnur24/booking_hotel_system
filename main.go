@@ -29,6 +29,10 @@ func main() {
 	hotelService := service.NewHotelService(hotelRepository, db, validate)
 	hotelController := controller.NewHotelController(hotelService)
 
+	floorRepository := repository.NewFloorRepository()
+	floorService := service.NewFloorService(floorRepository, db, validate)
+	floorController := controller.NewFloorController(floorService)
+
 	invoiceRepository := repository.NewInvoiceRepository()
 	invoiceService := service.NewInvoiceService(invoiceRepository, db, validate)
 	invoiceController := controller.NewInvoiceController(invoiceService)
@@ -41,12 +45,24 @@ func main() {
 	discountService := service.NewDiscountService(discountRepository, db, validate)
 	discountController := controller.NewDiscountController(discountService)
 
+	facilityRepository := repository.NewFacilityRepository()
+	facilityService := service.NewFacilityService(facilityRepository, db, validate)
+	facilityController := controller.NewFacilityController(facilityService)
+
+	meetingRoomRepository := repository.NewMeetingRoomRepository()
+	meetingRoomService := service.NewMeetingRoomService(meetingRoomRepository, db, validate)
+	meetingRoomController := controller.NewMeetingRoomController(meetingRoomService)
+
 	router := routers.NewUserRouter(userController)
 	router = routers.NewRoleRouter(roleController)
 	router = routers.NewHotelRouter(hotelController)
+	router = routers.NewFloorRouter(floorController)
 	router = routers.NewInvoiceRouter(invoiceController)
 	router = routers.NewBookingRouter(bookingController)
 	router = routers.NewDiscountRouter(discountController)
+	router = routers.NewFacilityRouter(facilityController)
+	router = routers.NewMeetingRoomRouter(meetingRoomController)
+
 	server := http.Server{
 		Addr:    "localhost:3000",
 		Handler: middleware.NewAuthMiddleware(router),

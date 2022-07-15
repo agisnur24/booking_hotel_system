@@ -27,12 +27,12 @@ func (repository MeetingRoomRepositoryImpl) Create(ctx context.Context, tx *sql.
 	return meetingRoom
 }
 
-func (repository MeetingRoomRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, meeting_room domain.MeetingRoom) domain.MeetingRoom {
+func (repository MeetingRoomRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, meetingRoom domain.MeetingRoom) domain.MeetingRoom {
 	SQL := "update meeting_rooms set floor_id = ?, name = ?, capacity = ?, facility_id = ? where id = ?"
-	_, err := tx.ExecContext(ctx, SQL, meeting_room.FloorId, meeting_room.Name, meeting_room.Capacity, meeting_room.FacilityId, meeting_room.Id)
+	_, err := tx.ExecContext(ctx, SQL, meetingRoom.FloorId, meetingRoom.Name, meetingRoom.Capacity, meetingRoom.FacilityId, meetingRoom.Id)
 	helper.PanicIfError(err)
 
-	return meeting_room
+	return meetingRoom
 }
 
 func (repository MeetingRoomRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, meetingRoom domain.MeetingRoom) {
