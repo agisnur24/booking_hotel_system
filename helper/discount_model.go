@@ -7,16 +7,16 @@ import (
 
 func ToDiscountResponse(discount domain.Discount) web.DiscountResponse {
 	return web.DiscountResponse{
-		Id:           discount.Id,
-		EmployeeId:   discount.EmployeeId,
-		HotelId:      discount.HotelId,
-		RoomId:       discount.RoomId,
-		Rate:         discount.Rate,
-		Status:       discount.Status,
-		RequestDate:  discount.RequestDate,
-		EmployeeName: discount.EmployeeName,
-		HotelName:    discount.HotelName,
-		RoomName:     discount.RoomName,
+		Id:            discount.Id,
+		EmployeeId:    discount.EmployeeId,
+		HotelId:       discount.HotelId,
+		MeetingRoomId: discount.MeetingRoomId,
+		Rate:          discount.Rate,
+		Status:        discount.Status,
+		RequestDate:   discount.RequestDate,
+		EmployeeName:  discount.EmployeeName,
+		HotelName:     discount.HotelName,
+		RoomName:      discount.RoomName,
 	}
 }
 

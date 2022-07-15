@@ -41,10 +41,6 @@ func main() {
 	bookingService := service.NewBookingService(bookingRepository, db, validate)
 	bookingController := controller.NewBookingController(bookingService)
 
-	discountRepository := repository.NewDiscountRepository()
-	discountService := service.NewDiscountService(discountRepository, db, validate)
-	discountController := controller.NewDiscountController(discountService)
-
 	facilityRepository := repository.NewFacilityRepository()
 	facilityService := service.NewFacilityService(facilityRepository, db, validate)
 	facilityController := controller.NewFacilityController(facilityService)
@@ -53,15 +49,19 @@ func main() {
 	meetingRoomService := service.NewMeetingRoomService(meetingRoomRepository, db, validate)
 	meetingRoomController := controller.NewMeetingRoomController(meetingRoomService)
 
+	discountRepository := repository.NewDiscountRepository()
+	discountService := service.NewDiscountService(discountRepository, db, validate)
+	discountController := controller.NewDiscountController(discountService)
+
 	router := routers.NewUserRouter(userController)
 	router = routers.NewRoleRouter(roleController)
 	router = routers.NewHotelRouter(hotelController)
 	router = routers.NewFloorRouter(floorController)
 	router = routers.NewInvoiceRouter(invoiceController)
 	router = routers.NewBookingRouter(bookingController)
-	router = routers.NewDiscountRouter(discountController)
 	router = routers.NewFacilityRouter(facilityController)
 	router = routers.NewMeetingRoomRouter(meetingRoomController)
+	router = routers.NewDiscountRouter(discountController)
 
 	server := http.Server{
 		Addr:    "localhost:3000",

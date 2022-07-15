@@ -9,6 +9,7 @@ import (
 	"github.com/agisnur24/booking_hotel_system.git/model/web"
 	"github.com/agisnur24/booking_hotel_system.git/repository"
 	"github.com/go-playground/validator/v10"
+	"github.com/sirupsen/logrus"
 )
 
 type DiscountServiceImpl struct {
@@ -34,12 +35,12 @@ func (service *DiscountServiceImpl) Create(ctx context.Context, request web.Disc
 	defer helper.CommitOrRollback(tx)
 
 	discount := domain.Discount{
-		EmployeeId:  request.EmployeeId,
-		HotelId:     request.HotelId,
-		RoomId:      request.RoomId,
-		Rate:        request.Rate,
-		Status:      request.Status,
-		RequestDate: request.RequestDate,
+		EmployeeId:    request.EmployeeId,
+		HotelId:       request.HotelId,
+		MeetingRoomId: request.MeetingRoomId,
+		Rate:          request.Rate,
+		Status:        request.Status,
+		RequestDate:   request.RequestDate,
 	}
 
 	discount = service.DiscountRepository.Create(ctx, tx, discount)
@@ -60,7 +61,7 @@ func (service *DiscountServiceImpl) Update(ctx context.Context, request web.Disc
 	}
 	discount.EmployeeId = request.EmployeeId
 	discount.HotelId = request.HotelId
-	discount.RoomId = request.RoomId
+	discount.MeetingRoomId = request.MeetingRoomId
 	discount.Rate = request.Rate
 	discount.Status = request.Status
 	discount.RequestDate = request.RequestDate
@@ -85,6 +86,7 @@ func (service *DiscountServiceImpl) Delete(ctx context.Context, discountId int) 
 }
 
 func (service *DiscountServiceImpl) FindById(ctx context.Context, discountId int) web.DiscountResponse {
+	logrus.Info("Guest ser Find By Id star")
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -93,15 +95,17 @@ func (service *DiscountServiceImpl) FindById(ctx context.Context, discountId int
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
+	logrus.Info("Guest ser Find By Id end")
 	return helper.ToDiscountResponse(discount)
 }
 
 func (service *DiscountServiceImpl) FindAll(ctx context.Context) []web.DiscountResponse {
+	logrus.Info("Guest ser Find al star")
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
 	discounts := service.DiscountRepository.FindAll(ctx, tx)
-
+	logrus.Info("Guest ser Find al star")
 	return helper.ToDiscountResponses(discounts)
 }
