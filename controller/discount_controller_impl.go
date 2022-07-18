@@ -5,6 +5,7 @@ import (
 	"github.com/agisnur24/booking_hotel_system.git/model/web"
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/julienschmidt/httprouter"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 )
@@ -37,8 +38,8 @@ func (controller *DiscountControllerImpl) Update(writer http.ResponseWriter, req
 	discountUpdateRequest := web.DiscountUpdateRequest{}
 	helper.ReadFromRequestBody(request, &discountUpdateRequest)
 
-	guestId := params.ByName("guestId")
-	id, err := strconv.Atoi(guestId)
+	discountId := params.ByName("discountId")
+	id, err := strconv.Atoi(discountId)
 	helper.PanicIfError(err)
 
 	discountUpdateRequest.Id = id
@@ -69,7 +70,7 @@ func (controller *DiscountControllerImpl) Delete(writer http.ResponseWriter, req
 }
 
 func (controller *DiscountControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
+	logrus.Info("Guest con Find By Id star")
 	discountId := params.ByName("discountId")
 	id, err := strconv.Atoi(discountId)
 	helper.PanicIfError(err)
@@ -80,18 +81,18 @@ func (controller *DiscountControllerImpl) FindById(writer http.ResponseWriter, r
 		Status: "OK",
 		Data:   discountResponse,
 	}
-
+	logrus.Info("Guest con Find By Id end")
 	helper.WriteToResponseBody(writer, webResponse)
 }
 
 func (controller *DiscountControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
-	discountResponses := controller.DiscountService.FindAll(request.Context())
+	logrus.Info("Guest con Find al star")
+	discountResponse := controller.DiscountService.FindAll(request.Context())
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   discountResponses,
+		Data:   discountResponse,
 	}
-
+	logrus.Info("Guest con Find al end")
 	helper.WriteToResponseBody(writer, webResponse)
 }

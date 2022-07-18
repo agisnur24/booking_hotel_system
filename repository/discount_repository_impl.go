@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/agisnur24/booking_hotel_system.git/helper"
 	"github.com/agisnur24/booking_hotel_system.git/model/domain"
+	"github.com/sirupsen/logrus"
 )
 
 type DiscountRepositoryImpl struct {
@@ -16,8 +17,8 @@ func NewDiscountRepository() DiscountRepository {
 }
 
 func (repository DiscountRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, discount domain.Discount) domain.Discount {
-	SQL := "insert into discounts(employee_id, rate, status, request_date, hotel_id, room_id) values (?, ?, ?, ?, ?, ?)"
-	result, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.Rate, discount.Status, discount.RequestDate, discount.HotelId, discount.RoomId)
+	SQL := "insert into discounts(employee_id, rate, status, request_date, hotel_id, meeting_room_id) values (?, ?, ?, ?, ?, ?)"
+	result, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.Rate, discount.Status, discount.RequestDate, discount.HotelId, discount.MeetingRoomId)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
@@ -28,8 +29,8 @@ func (repository DiscountRepositoryImpl) Create(ctx context.Context, tx *sql.Tx,
 }
 
 func (repository DiscountRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, discount domain.Discount) domain.Discount {
-	SQL := "update discounts set employee_id =?, rate = ?, status = ?, request_date = ?, hotel_id=?, room_id=? where id = ?"
-	_, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.Rate, discount.Status, discount.RequestDate, discount.HotelId, discount.RoomId, discount.Id)
+	SQL := "update discounts set employee_id =?, hotel_id=?,meeting_room_id=?,rate = ?, status = ?, request_date = ?   where id = ?"
+	_, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.HotelId, discount.MeetingRoomId, discount.Rate, discount.Status, discount.RequestDate, discount.Id)
 	helper.PanicIfError(err)
 
 	return discount
@@ -42,24 +43,27 @@ func (repository DiscountRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx,
 }
 
 func (repository DiscountRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, discountId int) (domain.Discount, error) {
-	SQL := "select d.id, d.employee_id, d.hotel_id, d.room_id, d.rate, d.status, d.request_date, e.name as employee_name, h.name as hotel_name, r.name as room_name from discounts d inner join employees e on d.employee_id=e.id inner join hotels h on d.hotel_id=h.id inner join meeting_rooms r on d.room_id=r.id where d.id = ?"
+	logrus.Info("Guest repo Find By Id Start")
+	SQL := "SELECT d.id, d.employee_id, d.hotel_id, d.meeting_room_id, d.rate, d.status, d.request_date, e.name as employee_name, h.name as hotel_name, e.name as meeting_room_name from discounts d INNER JOIN employees e on d.employee_id=e.id INNER JOIN hotels h on d.hotel_id=h.id INNER JOIN meeting_rooms m on d.meeting_room_id=m.id where d.id = ?"
 	rows, err := tx.QueryContext(ctx, SQL, discountId)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
 	discount := domain.Discount{}
 	if rows.Next() {
-		err := rows.Scan(&discount.Id, &discount.EmployeeId, &discount.HotelId, &discount.RoomId, &discount.Rate, &discount.Status, &discount.RequestDate, &discount.EmployeeName, &discount.HotelName, &discount.RoomName)
+		err := rows.Scan(&discount.Id, &discount.EmployeeId, &discount.HotelId, &discount.MeetingRoomId, &discount.Rate, &discount.Status, &discount.RequestDate, &discount.EmployeeName, &discount.HotelName, &discount.RoomName)
 		helper.PanicIfError(err)
+		logrus.Info("Guest repo Find By Id end")
 		return discount, nil
 	} else {
+		logrus.Info("Guest repo Find By Id end")
 		return discount, errors.New("id not found")
 	}
 }
 
 func (repository DiscountRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.Discount {
-
-	SQL := "select d.id, d.employee_id, d.hotel_id, d.room_id, d.rate, d.status, d.request_date, e.name as employee_name, h.name as hotel_name, r.name as room_name from discounts d inner join employees e on d.employee_id=e.id inner join hotels h on d.hotel_id=h.id inner join meeting_rooms r on d.room_id=r.id"
+	logrus.Info("Guest repo Find al Start")
+	SQL := "SELECT d.id, d.employee_id, d.hotel_id, d.meeting_room_id, d.rate, d.status, d.request_date, e.name as employee_name, h.name as hotel_name, e.name as meeting_room_name from discounts d INNER JOIN employees e on d.employee_id=e.id INNER JOIN hotels h on d.hotel_id=h.id INNER JOIN meeting_rooms m on d.meeting_room_id=m.id"
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
 	defer rows.Close()
@@ -67,9 +71,10 @@ func (repository DiscountRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx
 	var discounts []domain.Discount
 	for rows.Next() {
 		discount := domain.Discount{}
-		err := rows.Scan(&discount.Id, &discount.EmployeeId, &discount.HotelId, &discount.RoomId, &discount.Rate, &discount.Status, &discount.RequestDate, &discount.EmployeeName, &discount.HotelName, &discount.RoomName)
+		err := rows.Scan(&discount.Id, &discount.EmployeeId, &discount.HotelId, &discount.MeetingRoomId, &discount.Rate, &discount.Status, &discount.RequestDate, &discount.EmployeeName, &discount.HotelName, &discount.RoomName)
 		helper.PanicIfError(err)
 		discounts = append(discounts, discount)
 	}
+	logrus.Info("Guest repo Find al end")
 	return discounts
 }

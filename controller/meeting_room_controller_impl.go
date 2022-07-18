@@ -37,8 +37,8 @@ func (controller *MeetingRoomControllerImpl) Update(writer http.ResponseWriter, 
 	meetingRoomUpdateRequest := web.MeetingRoomUpdateRequest{}
 	helper.ReadFromRequestBody(request, &meetingRoomUpdateRequest)
 
-	meeting_roomId := params.ByName("meeting_roomId")
-	id, err := strconv.Atoi(meeting_roomId)
+	meetingRoomId := params.ByName("meeting_roomId")
+	id, err := strconv.Atoi(meetingRoomId)
 	helper.PanicIfError(err)
 
 	meetingRoomUpdateRequest.Id = id
