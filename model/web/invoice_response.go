@@ -3,7 +3,7 @@ package web
 type InvoiceResponse struct {
 	Id                   int    `json:"id"`
 	Number               int    `json:"number"`
-	EmpeloyeeId          int    `json:"empeloyee_id"`
+	EmpeloyeeId          int    `json:"employee_id"`
 	MeetingRoomPricingId int    `json:"meeting_room_pricing_id"`
 	DiscountId           int    `json:"discount_id"`
 	Pic                  string `json:"pic"`
