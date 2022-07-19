@@ -1,12 +1,14 @@
 package test
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"github.com/agisnur24/booking_hotel_system.git/app/routers"
 	"github.com/agisnur24/booking_hotel_system.git/controller"
 	"github.com/agisnur24/booking_hotel_system.git/helper"
 	"github.com/agisnur24/booking_hotel_system.git/middleware"
+	"github.com/agisnur24/booking_hotel_system.git/model/domain"
 	"github.com/agisnur24/booking_hotel_system.git/repository"
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/go-playground/validator/v10"
@@ -14,6 +16,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -36,7 +39,6 @@ func setupDiscountRouter(db *sql.DB) http.Handler {
 	discountRepository := repository.NewDiscountRepository()
 	discountService := service.NewDiscountService(discountRepository, db, validate)
 	discountController := controller.NewDiscountController(discountService)
-
 	router := routers.NewDiscountRouter(discountController)
 
 	return middleware.NewAuthMiddleware(router)
@@ -51,7 +53,7 @@ func TestCreateDiscountSuccess(t *testing.T) {
 	truncateDiscount(db)
 	router := setupDiscountRouter(db)
 
-	requestBody := strings.NewReader(`{"employee_id" : 1,"hotel_id": 1, "room_id": 1, "rate":"10%","status" : "approve,rejected,waiting" , "request_date" : "2022-07-07"}`) // belum memasukan data asli
+	requestBody := strings.NewReader(`{"employee_id" : 1, "hotel_id" : 1, "meeting_room_id" : 1, "rate" : "5", "status" : "waiting", "request_date" : "2022-05-08 00:00:00"}`)
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/discounts", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
@@ -71,19 +73,19 @@ func TestCreateDiscountSuccess(t *testing.T) {
 	assert.Equal(t, "OK", responseBody["status"])
 	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["employee_id"].(float64)))
 	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["hotel_id"].(float64)))
-	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["room_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["meeting_room_id"].(float64)))
 	assert.Equal(t, "5", responseBody["data"].(map[string]interface{})["rate"])
-	assert.Equal(t, "approve,rejected,waiting", responseBody["data"].(map[string]interface{})["status"])
-	assert.Equal(t, "2022-07-07", responseBody["data"].(map[string]interface{})["request_date"])
+	assert.Equal(t, "waiting", responseBody["data"].(map[string]interface{})["status"])
+	assert.Equal(t, "2022-05-08 00:00:00", responseBody["data"].(map[string]interface{})["request_date"])
 }
 
-/*func TestCreateDiscountFailed(t *testing.T) {
+func TestCreateDiscountFail(t *testing.T) {
 	db := setupTestDiscountDB()
 	truncateDiscount(db)
 	router := setupDiscountRouter(db)
 
 	requestBody := strings.NewReader(`{"name" : ""}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/guests", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/discounts", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
 
@@ -109,15 +111,18 @@ func TestUpdateDiscountSuccess(t *testing.T) {
 	tx, _ := db.Begin()
 	discountRepository := repository.NewDiscountRepository()
 	discount := discountRepository.Create(context.Background(), tx, domain.Discount{
-		Rate:        2, // int
-		Status:      "",
-		RequestDate: "",
+		EmployeeId:    1,
+		HotelId:       1,
+		MeetingRoomId: 1,
+		Rate:          "5",
+		Status:        "waiting",
+		RequestDate:   "2022-05-08 00:00:00",
 	})
 	tx.Commit()
 
 	router := setupDiscountRouter(db)
 
-	requestBody := strings.NewReader(`{"name" : "pokaliswali","address":"Belum Jadi","phone_number":"089876545","email":"imey@gmail.com"}`)
+	requestBody := strings.NewReader(`{"employee_id" : 1, "hotel_id" : 1, "meeting_room_id" : 1, "rate" : "5", "status" : "waiting", "request_date" : "2022-05-08 00:00:00"}`)
 	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/discounts/"+strconv.Itoa(discount.Id), requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
@@ -136,23 +141,23 @@ func TestUpdateDiscountSuccess(t *testing.T) {
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
 	assert.Equal(t, discount.Id, int(responseBody["data"].(map[string]interface{})["id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["employee_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["hotel_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["meeting_room_id"].(float64)))
+	assert.Equal(t, "5", responseBody["data"].(map[string]interface{})["rate"])
+	assert.Equal(t, "waiting", responseBody["data"].(map[string]interface{})["status"])
+	assert.Equal(t, "2022-05-08 00:00:00", responseBody["data"].(map[string]interface{})["request_date"])
 
-	assert.Equal(t, "pokaliswali", responseBody["data"].(map[string]interface{})["name"])
-	assert.Equal(t, "Belum Jadi", responseBody["data"].(map[string]interface{})["address"])
-	assert.Equal(t, "089876545", responseBody["data"].(map[string]interface{})["phone_number"])
-	assert.Equal(t, "imey@gmail.com", responseBody["data"].(map[string]interface{})["email"])
 }
 
-func TestUpdateDiscountFailed(t *testing.T) {
+func TestUpdateDiscountFail(t *testing.T) {
 	db := setupTestDiscountDB()
 	truncateDiscount(db)
 
 	tx, _ := db.Begin()
 	discountRepository := repository.NewDiscountRepository()
 	discount := discountRepository.Create(context.Background(), tx, domain.Discount{
-		Rate:        2, // int
-		Status:      "",
-		RequestDate: "",
+		Status: "gagal",
 	})
 	tx.Commit()
 
@@ -185,9 +190,12 @@ func TestGetDiscountSuccess(t *testing.T) {
 	tx, _ := db.Begin()
 	discountRepository := repository.NewDiscountRepository()
 	discount := discountRepository.Create(context.Background(), tx, domain.Discount{
-		Rate:        2, // int
-		Status:      "",
-		RequestDate: "",
+		EmployeeId:    1,
+		HotelId:       1,
+		MeetingRoomId: 1,
+		Rate:          "5",
+		Status:        "rejected",
+		RequestDate:   "2022-05-08 00:00:00",
 	})
 	tx.Commit()
 
@@ -210,13 +218,15 @@ func TestGetDiscountSuccess(t *testing.T) {
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
 	assert.Equal(t, discount.Id, int(responseBody["data"].(map[string]interface{})["id"].(float64)))
-	assert.Equal(t, discount.Name, responseBody["data"].(map[string]interface{})["name"])
-	assert.Equal(t, discount.Address, responseBody["data"].(map[string]interface{})["address"])
-	assert.Equal(t, discount.Phone_Number, responseBody["data"].(map[string]interface{})["phone_number"])
-	assert.Equal(t, discount.Email, responseBody["data"].(map[string]interface{})["email"])
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["employee_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["hotel_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["meeting_room_id"].(float64)))
+	assert.Equal(t, "5", responseBody["data"].(map[string]interface{})["rate"])
+	assert.Equal(t, "rejected", responseBody["data"].(map[string]interface{})["status"])
+	assert.Equal(t, "2022-05-08 00:00:00", responseBody["data"].(map[string]interface{})["request_date"])
 }
 
-func TestGetDiscountFailed(t *testing.T) {
+func TestGetDiscountFail(t *testing.T) {
 	db := setupTestDiscountDB()
 	truncateDiscount(db)
 	router := setupDiscountRouter(db)
@@ -246,13 +256,16 @@ func TestDeleteDiscountSuccess(t *testing.T) {
 	tx, _ := db.Begin()
 	discountRepository := repository.NewDiscountRepository()
 	discount := discountRepository.Create(context.Background(), tx, domain.Discount{
-		Rate:        2, // int
-		Status:      "",
-		RequestDate: "",
+		EmployeeId:    1,
+		HotelId:       1,
+		MeetingRoomId: 1,
+		Rate:          "5",
+		Status:        "waiting",
+		RequestDate:   "2022-05-08 00:00:00",
 	})
 	tx.Commit()
 
-	router := setupGuestRouter(db)
+	router := setupDiscountRouter(db)
 
 	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/discounts/"+strconv.Itoa(discount.Id), nil)
 	request.Header.Add("Content-Type", "application/json")
@@ -273,7 +286,7 @@ func TestDeleteDiscountSuccess(t *testing.T) {
 	assert.Equal(t, "OK", responseBody["status"])
 }
 
-func TestDeleteDiscountFailed(t *testing.T) {
+func TestDeleteDiscountFail(t *testing.T) {
 	db := setupTestDiscountDB()
 	truncateDiscount(db)
 	router := setupDiscountRouter(db)
@@ -297,17 +310,33 @@ func TestDeleteDiscountFailed(t *testing.T) {
 	assert.Equal(t, "NOT FOUND", responseBody["status"])
 }
 
-func TestListDiscountsSuccess(t *testing.T) {
+func TestListDiscountSuccess(t *testing.T) {
 	db := setupTestDiscountDB()
 	truncateDiscount(db)
 
 	tx, _ := db.Begin()
 	discountRepository := repository.NewDiscountRepository()
 	discount1 := discountRepository.Create(context.Background(), tx, domain.Discount{
-		Name: "Gadget",
+		EmployeeId:    1,
+		HotelId:       1,
+		MeetingRoomId: 1,
+		Rate:          "5",
+		Status:        "waiting",
+		RequestDate:   "2022-05-08 00:00:00",
+		EmployeeName:  "kecoa",
+		HotelName:     "PRODEO",
+		RoomName:      "kecoa",
 	})
 	discount2 := discountRepository.Create(context.Background(), tx, domain.Discount{
-		Name: "Computer",
+		EmployeeId:    1,
+		HotelId:       1,
+		MeetingRoomId: 1,
+		Rate:          "10",
+		Status:        "rejected",
+		RequestDate:   "2022-05-09 00:00:00",
+		EmployeeName:  "kecoa",
+		HotelName:     "PRODEO",
+		RoomName:      "kecoa",
 	})
 	tx.Commit()
 
@@ -330,27 +359,36 @@ func TestListDiscountsSuccess(t *testing.T) {
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
 
-	fmt.Println(responseBody)
-
 	var discounts = responseBody["data"].([]interface{})
 
 	discountResponse1 := discounts[0].(map[string]interface{})
 	discountResponse2 := discounts[1].(map[string]interface{})
 
 	assert.Equal(t, discount1.Id, int(discountResponse1["id"].(float64)))
-	assert.Equal(t, discount1.Name, discountResponse1["name"])
-	assert.Equal(t, discount1.Address, discountResponse1["address"])
-	assert.Equal(t, discount1.Phone_Number, discountResponse1["phone_number"])
-	assert.Equal(t, discount1.Email, discountResponse1["email"])
+	assert.Equal(t, discount1.EmployeeId, int(discountResponse1["employee_id"].(float64)))
+	assert.Equal(t, discount1.HotelId, int(discountResponse1["hotel_id"].(float64)))
+	assert.Equal(t, discount1.MeetingRoomId, int(discountResponse1["meeting_room_id"].(float64)))
+	assert.Equal(t, discount1.Rate, discountResponse1["rate"])
+	assert.Equal(t, discount1.Status, discountResponse1["status"])
+	assert.Equal(t, discount1.RequestDate, discountResponse1["request_date"])
+	assert.Equal(t, discount1.EmployeeName, discountResponse1["employee_name"])
+	assert.Equal(t, discount1.HotelName, discountResponse1["hotel_name"])
+	assert.Equal(t, discount1.RoomName, discountResponse1["room_name"])
 
 	assert.Equal(t, discount2.Id, int(discountResponse2["id"].(float64)))
-	assert.Equal(t, discount2.Name, discountResponse2["name"])
-	assert.Equal(t, discount2.Address, discountResponse2["address"])
-	assert.Equal(t, discount2.Phone_Number, discountResponse2["phone_number"])
-	assert.Equal(t, discount2.Email, discountResponse2["email"])
+	assert.Equal(t, discount2.EmployeeId, int(discountResponse2["employee_id"].(float64)))
+	assert.Equal(t, discount2.HotelId, int(discountResponse2["hotel_id"].(float64)))
+	assert.Equal(t, discount2.MeetingRoomId, int(discountResponse2["meeting_room_id"].(float64)))
+	assert.Equal(t, discount2.Rate, discountResponse2["rate"])
+	assert.Equal(t, discount2.Status, discountResponse2["status"])
+	assert.Equal(t, discount2.RequestDate, discountResponse2["request_date"])
+	assert.Equal(t, discount2.EmployeeName, discountResponse2["employee_name"])
+	assert.Equal(t, discount2.HotelName, discountResponse2["hotel_name"])
+	assert.Equal(t, discount2.RoomName, discountResponse2["room_name"])
+
 }
 
-func TestUnauthorizedDiscount(t *testing.T) {
+func TestDiscountUnauthorized(t *testing.T) {
 	db := setupTestDiscountDB()
 	truncateDiscount(db)
 	router := setupDiscountRouter(db)
@@ -372,4 +410,3 @@ func TestUnauthorizedDiscount(t *testing.T) {
 	assert.Equal(t, 401, int(responseBody["code"].(float64)))
 	assert.Equal(t, "UNAUTHORIZED", responseBody["status"])
 }
-*/
