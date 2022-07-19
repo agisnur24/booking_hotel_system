@@ -1,28 +1,6 @@
 package test
 
-import (
-	"context"
-	"database/sql"
-	"encoding/json"
-	"github.com/agisnur24/booking_hotel_system.git/app/routers"
-	"github.com/agisnur24/booking_hotel_system.git/controller"
-	"github.com/agisnur24/booking_hotel_system.git/helper"
-	"github.com/agisnur24/booking_hotel_system.git/middleware"
-	"github.com/agisnur24/booking_hotel_system.git/model/domain"
-	"github.com/agisnur24/booking_hotel_system.git/repository"
-	"github.com/agisnur24/booking_hotel_system.git/service"
-	"github.com/go-playground/validator/v10"
-	"github.com/stretchr/testify/assert"
-	"io"
-	"net/http"
-	"net/http/httptest"
-	"strconv"
-	"strings"
-	"testing"
-	"time"
-)
-
-func setupTestEmployeeDB() *sql.DB {
+/*func setupTestEmployeeDB() *sql.DB {
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/booking_management_system")
 	helper.PanicIfError(err)
 
@@ -368,10 +346,10 @@ func TestListEmployeesSuccess(t *testing.T) {
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
 
-	var users = responseBody["data"].([]interface{})
+	var employees = responseBody["data"].([]interface{})
 
-	employeeResponse1 := users[0].(map[string]interface{})
-	employeeResponse2 := users[1].(map[string]interface{})
+	employeeResponse1 := employees[0].(map[string]interface{})
+	employeeResponse2 := employees[1].(map[string]interface{})
 
 	assert.Equal(t, employee1.Id, int(employeeResponse1["id"].(float64)))
 	assert.Equal(t, employee1.RoleId, int(employeeResponse1["role_id"].(float64)))
@@ -417,4 +395,4 @@ func TestEmployeeUnauthorized(t *testing.T) {
 
 	assert.Equal(t, 401, int(responseBody["code"].(float64)))
 	assert.Equal(t, "UNAUTHORIZED", responseBody["status"])
-}
+}*/

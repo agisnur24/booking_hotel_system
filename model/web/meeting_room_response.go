@@ -6,8 +6,8 @@ type MeetingRoomResponse struct {
 	Name                string `json:"name"`
 	Capacity            string `json:"capacity"`
 	FacilityId          int    `json:"facility_id"`
-	FacilityName        string `json:"facility_name"`
-	FacilityDescription string `json:"facility_description"`
 	FloorName           string `json:"floor_name"`
 	FloorDescription    string `json:"floor_description"`
+	FacilityName        string `json:"facility_name"`
+	FacilityDescription string `json:"facility_description"`
 }

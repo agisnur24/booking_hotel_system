@@ -6,8 +6,8 @@ type MeetingRoom struct {
 	Name                string
 	Capacity            string
 	FacilityId          int
-	FacilityName        string
-	FacilityDescription string
 	FloorName           string
 	FloorDescription    string
+	FacilityName        string
+	FacilityDescription string
 }

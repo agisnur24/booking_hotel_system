@@ -42,14 +42,14 @@ func (repository MeetingRoomRepositoryImpl) Delete(ctx context.Context, tx *sql.
 }
 
 func (repository MeetingRoomRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, meetingRoomId int) (domain.MeetingRoom, error) {
-	SQL := "select m.id, m.floor_id, m.name, m.capacity, m.facility_id, f.name as facility_name, f.description as facility_description, a.name as floor_name, a.description as floor_description from meeting_rooms m INNER JOIN facilities f on m.facility_id= f.id INNER JOIN floors a on m.floor_id= a.id where m.id = ?"
+	SQL := "select m.id, m.floor_id, m.name, m.capacity, m.facility_id, a.name as floor_name, a.description as floor_description, f.name as faccility_name, f.description as facility_description from meeting_rooms m INNER JOIN floors a on m.floor_id= a.id INNER JOIN facilities f on m.facility_id= f.id where m.id = ?"
 	rows, err := tx.QueryContext(ctx, SQL, meetingRoomId)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
 	meetingRoom := domain.MeetingRoom{}
 	if rows.Next() {
-		err := rows.Scan(&meetingRoom.Id, &meetingRoom.FloorId, &meetingRoom.Name, &meetingRoom.Capacity, &meetingRoom.FacilityId, &meetingRoom.FacilityName, &meetingRoom.FacilityDescription, &meetingRoom.FloorName, &meetingRoom.FloorDescription)
+		err := rows.Scan(&meetingRoom.Id, &meetingRoom.FloorId, &meetingRoom.Name, &meetingRoom.Capacity, &meetingRoom.FacilityId, &meetingRoom.FloorName, &meetingRoom.FloorDescription, &meetingRoom.FacilityName, &meetingRoom.FacilityDescription)
 		helper.PanicIfError(err)
 		return meetingRoom, nil
 	} else {
@@ -58,7 +58,7 @@ func (repository MeetingRoomRepositoryImpl) FindById(ctx context.Context, tx *sq
 }
 
 func (repository MeetingRoomRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.MeetingRoom {
-	SQL := "select m.id, m.floor_id, m.name, m.capacity, m.facility_id, f.name as facility_name, f.description as facility_description, a.name as floor_name, a.description as floor_description from meeting_rooms m INNER JOIN facilities f on m.facility_id= f.id INNER JOIN floors a on m.floor_id= a.id"
+	SQL := "select m.id, m.floor_id, m.name, m.capacity, m.facility_id, a.name as floor_name, a.description as floor_description, f.name as facility_name, f.description as facility_description from meeting_rooms m INNER JOIN floors a on m.floor_id= a.id INNER JOIN facilities f on m.facility_id= f.id"
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
 	defer rows.Close()
@@ -66,7 +66,7 @@ func (repository MeetingRoomRepositoryImpl) FindAll(ctx context.Context, tx *sql
 	var meetingRooms []domain.MeetingRoom
 	for rows.Next() {
 		meetingRoom := domain.MeetingRoom{}
-		err := rows.Scan(&meetingRoom.Id, &meetingRoom.FloorId, &meetingRoom.Name, &meetingRoom.Capacity, &meetingRoom.FacilityId, &meetingRoom.FacilityName, &meetingRoom.FacilityDescription, &meetingRoom.FloorName, &meetingRoom.FloorDescription)
+		err := rows.Scan(&meetingRoom.Id, &meetingRoom.FloorId, &meetingRoom.Name, &meetingRoom.Capacity, &meetingRoom.FacilityId, &meetingRoom.FloorName, &meetingRoom.FloorDescription, &meetingRoom.FacilityName, &meetingRoom.FacilityDescription)
 		helper.PanicIfError(err)
 		meetingRooms = append(meetingRooms, meetingRoom)
 	}

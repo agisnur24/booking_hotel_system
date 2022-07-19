@@ -12,10 +12,10 @@ func ToMeetingRoomResponse(meetingRoom domain.MeetingRoom) web.MeetingRoomRespon
 		Name:                meetingRoom.Name,
 		Capacity:            meetingRoom.Capacity,
 		FacilityId:          meetingRoom.FacilityId,
-		FacilityName:        meetingRoom.FacilityName,
-		FacilityDescription: meetingRoom.FacilityDescription,
 		FloorName:           meetingRoom.FloorName,
 		FloorDescription:    meetingRoom.FloorDescription,
+		FacilityName:        meetingRoom.FacilityName,
+		FacilityDescription: meetingRoom.FacilityDescription,
 	}
 }
 

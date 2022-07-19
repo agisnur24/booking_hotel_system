@@ -12,14 +12,14 @@ import (
 )
 
 type MeetingRoomServiceImpl struct {
-	MeetingRoomRepository repository.MeetingRoomRepository
+	meetingRoomRepository repository.MeetingRoomRepository
 	DB                    *sql.DB
 	Validate              *validator.Validate
 }
 
 func NewMeetingRoomService(meetingRoomRepository repository.MeetingRoomRepository, DB *sql.DB, validate *validator.Validate) MeetingRoomService {
 	return &MeetingRoomServiceImpl{
-		MeetingRoomRepository: meetingRoomRepository,
+		meetingRoomRepository: meetingRoomRepository,
 		DB:                    DB,
 		Validate:              validate,
 	}
@@ -39,9 +39,7 @@ func (service *MeetingRoomServiceImpl) Create(ctx context.Context, request web.M
 		Capacity:   request.Capacity,
 		FacilityId: request.FacilityId,
 	}
-
-	meetingRoom = service.MeetingRoomRepository.Create(ctx, tx, meetingRoom)
-
+	meetingRoom = service.meetingRoomRepository.Create(ctx, tx, meetingRoom)
 	return helper.ToMeetingRoomResponse(meetingRoom)
 }
 
@@ -53,17 +51,18 @@ func (service *MeetingRoomServiceImpl) Update(ctx context.Context, request web.M
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	meetingRoom, err := service.MeetingRoomRepository.FindById(ctx, tx, request.Id)
+	meetingRoom, err := service.meetingRoomRepository.FindById(ctx, tx, request.Id)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
+	meetingRoom.Id = request.Id
 	meetingRoom.FloorId = request.FloorId
 	meetingRoom.Name = request.Name
 	meetingRoom.Capacity = request.Capacity
 	meetingRoom.FacilityId = request.FacilityId
 
-	meetingRoom = service.MeetingRoomRepository.Update(ctx, tx, meetingRoom)
+	meetingRoom = service.meetingRoomRepository.Update(ctx, tx, meetingRoom)
 
 	return helper.ToMeetingRoomResponse(meetingRoom)
 }
@@ -73,12 +72,12 @@ func (service *MeetingRoomServiceImpl) Delete(ctx context.Context, meetingRoomId
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	meetingRoom, err := service.MeetingRoomRepository.FindById(ctx, tx, meetingRoomId)
+	meetingRoom, err := service.meetingRoomRepository.FindById(ctx, tx, meetingRoomId)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	service.MeetingRoomRepository.Delete(ctx, tx, meetingRoom)
+	service.meetingRoomRepository.Delete(ctx, tx, meetingRoom)
 }
 
 func (service *MeetingRoomServiceImpl) FindById(ctx context.Context, meetingRoomId int) web.MeetingRoomResponse {
@@ -86,7 +85,7 @@ func (service *MeetingRoomServiceImpl) FindById(ctx context.Context, meetingRoom
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	meetingRoom, err := service.MeetingRoomRepository.FindById(ctx, tx, meetingRoomId)
+	meetingRoom, err := service.meetingRoomRepository.FindById(ctx, tx, meetingRoomId)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
@@ -99,7 +98,7 @@ func (service *MeetingRoomServiceImpl) FindAll(ctx context.Context) []web.Meetin
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	meetingRooms := service.MeetingRoomRepository.FindAll(ctx, tx)
+	meetingRooms := service.meetingRoomRepository.FindAll(ctx, tx)
 
 	return helper.ToMeetingRoomResponses(meetingRooms)
 }
