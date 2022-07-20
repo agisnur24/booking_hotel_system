@@ -106,6 +106,6 @@ func (service *DiscountServiceImpl) FindAll(ctx context.Context) []web.DiscountR
 	defer helper.CommitOrRollback(tx)
 
 	discounts := service.DiscountRepository.FindAll(ctx, tx)
-	logrus.Info("Guest ser Find al star")
+	logrus.Info("Guest ser Find al end")
 	return helper.ToDiscountResponses(discounts)
 }

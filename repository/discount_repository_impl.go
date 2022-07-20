@@ -16,8 +16,8 @@ func NewDiscountRepository() DiscountRepository {
 }
 
 func (repository DiscountRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, discount domain.Discount) domain.Discount {
-	SQL := "insert into discounts(employee_id, rate, status, request_date, hotel_id, meeting_room_id) values (?, ?, ?, ?, ?, ?)"
-	result, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.Rate, discount.Status, discount.RequestDate, discount.HotelId, discount.MeetingRoomId)
+	SQL := "insert into discounts(employee_id, hotel_id, meeting_room_id, rate, status, request_date) values (?, ?, ?, ?, ?, ?)"
+	result, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.Rate, discount.Status, discount.RequestDate)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
@@ -42,7 +42,8 @@ func (repository DiscountRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx,
 }
 
 func (repository DiscountRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, discountId int) (domain.Discount, error) {
-	SQL := "SELECT d.id, d.employee_id, d.hotel_id, d.meeting_room_id, d.rate, d.status, d.request_date, e.name as employee_name, h.name as hotel_name, e.name as meeting_room_name from discounts d INNER JOIN employees e on d.employee_id=e.id INNER JOIN hotels h on d.hotel_id=h.id INNER JOIN meeting_rooms m on d.meeting_room_id=m.id where d.id = ?"
+	SQL := "SELECT d.id, d.employee_id, d.hotel_id, d.meeting_room_id, d.rate, d.status, d.request_date, e.name as employee_name, h.name as hotel_name, e.name as meeting_room_name " +
+		"from discounts d INNER JOIN employees e on d.employee_id=e.id INNER JOIN hotels h on d.hotel_id=h.id INNER JOIN meeting_rooms m on d.meeting_room_id=m.id where d.id = ?"
 	rows, err := tx.QueryContext(ctx, SQL, discountId)
 	helper.PanicIfError(err)
 	defer rows.Close()
@@ -58,7 +59,8 @@ func (repository DiscountRepositoryImpl) FindById(ctx context.Context, tx *sql.T
 }
 
 func (repository DiscountRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.Discount {
-	SQL := "SELECT d.id, d.employee_id, d.hotel_id, d.meeting_room_id, d.rate, d.status, d.request_date, e.name as employee_name, h.name as hotel_name, e.name as meeting_room_name from discounts d INNER JOIN employees e on d.employee_id=e.id INNER JOIN hotels h on d.hotel_id=h.id INNER JOIN meeting_rooms m on d.meeting_room_id=m.id"
+	SQL := "SELECT d.id, d.employee_id, d.hotel_id, d.meeting_room_id, d.rate, d.status, d.request_date, e.name as employee_name, h.name as hotel_name, e.name as meeting_room_name " +
+		"from discounts d INNER JOIN employees e on d.employee_id=e.id INNER JOIN hotels h on d.hotel_id=h.id INNER JOIN meeting_rooms m on d.meeting_room_id=m.id"
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
 	defer rows.Close()

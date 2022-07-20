@@ -1,6 +1,26 @@
 package test
 
-/*func setupTestEmployeeDB() *sql.DB {
+import (
+	"database/sql"
+	"encoding/json"
+	"github.com/agisnur24/booking_hotel_system.git/app/routers"
+	"github.com/agisnur24/booking_hotel_system.git/controller"
+	"github.com/agisnur24/booking_hotel_system.git/helper"
+	"github.com/agisnur24/booking_hotel_system.git/middleware"
+	"github.com/agisnur24/booking_hotel_system.git/model/domain"
+	"github.com/agisnur24/booking_hotel_system.git/repository"
+	"github.com/agisnur24/booking_hotel_system.git/service"
+	"github.com/go-playground/validator/v10"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
+)
+
+func setupTestEmployeeDB() *sql.DB {
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/booking_management_system")
 	helper.PanicIfError(err)
 
@@ -395,4 +415,4 @@ func TestEmployeeUnauthorized(t *testing.T) {
 
 	assert.Equal(t, 401, int(responseBody["code"].(float64)))
 	assert.Equal(t, "UNAUTHORIZED", responseBody["status"])
-}*/
+}

@@ -1,6 +1,28 @@
 package test
 
-/*func setupTestMeetingRoomDB() *sql.DB {
+import (
+	"context"
+	"database/sql"
+	"encoding/json"
+	"github.com/agisnur24/booking_hotel_system.git/app/routers"
+	"github.com/agisnur24/booking_hotel_system.git/controller"
+	"github.com/agisnur24/booking_hotel_system.git/helper"
+	"github.com/agisnur24/booking_hotel_system.git/middleware"
+	"github.com/agisnur24/booking_hotel_system.git/model/domain"
+	"github.com/agisnur24/booking_hotel_system.git/repository"
+	"github.com/agisnur24/booking_hotel_system.git/service"
+	"github.com/go-playground/validator/v10"
+	"github.com/stretchr/testify/assert"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
+)
+
+func setupTestMeetingRoomDB() *sql.DB {
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/booking_management_system")
 	helper.PanicIfError(err)
 
@@ -124,7 +146,7 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 	assert.Equal(t, "swimming pool", responseBody["data"].(map[string]interface{})["facility_name"])
 	assert.Equal(t, "airnya bau", responseBody["data"].(map[string]interface{})["facility_description"])
 
-}*/
+}
 
 /*func TestUpdateMeetingRoomFailed(t *testing.T) {
 	db := setupTestMeetingRoomDB()

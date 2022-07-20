@@ -17,6 +17,10 @@ func main() {
 	db := app.NewDB()
 	validate := validator.New()
 
+	bookingRepository := repository.NewBookingRepository()
+	bookingService := service.NewBookingService(bookingRepository, db, validate)
+	bookingController := controller.NewBookingController(bookingService)
+
 	userRepository := repository.NewUserRepository()
 	userService := service.NewUserService(userRepository, db, validate)
 	userController := controller.NewUserController(userService)
@@ -32,21 +36,22 @@ func main() {
 	discountRepository := repository.NewDiscountRepository()
 	discountService := service.NewDiscountService(discountRepository, db, validate)
 	discountController := controller.NewDiscountController(discountService)
+	/*
+		meetingRoomRepository := repository.NewMeetingRoomRepository()
+		meetingRoomService := service.NewMeetingRoomService(meetingRoomRepository, db, validate)
+		meetingRoomController := controller.NewMeetingRoomController(meetingRoomService)
 
-	bookingRepository := repository.NewBookingRepository()
-	bookingService := service.NewBookingService(bookingRepository, db, validate)
-	bookingController := controller.NewBookingController(bookingService)
+		invoiceRepository := repository.NewInvoiceRepository()
+		invoiceService := service.NewInvoiceService(invoiceRepository, db, validate)
+		invoiceController := controller.NewInvoiceController(invoiceService)*/
 
-	invoiceRepository := repository.NewInvoiceRepository()
-	invoiceService := service.NewInvoiceService(invoiceRepository, db, validate)
-	invoiceController := controller.NewInvoiceController(invoiceService)
-
-	router := routers.NewUserRouter(userController)
-	router = routers.NewRoleRouter(roleController)
+	router := routers.NewBookingRouter(bookingController)
 	router = routers.NewHotelRouter(hotelController)
+	router = routers.NewRoleRouter(roleController)
+	router = routers.NewUserRouter(userController)
 	router = routers.NewDiscountRouter(discountController)
-	router = routers.NewBookingRouter(bookingController)
-	router = routers.NewInvoiceRouter(invoiceController)
+	/*router = routers.NewMeetingRoomRouter(meetingRoomController)
+	router = routers.NewInvoiceRouter(invoiceController)*/
 
 	server := http.Server{
 		Addr:    "localhost:3000",
