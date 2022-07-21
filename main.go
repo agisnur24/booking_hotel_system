@@ -23,10 +23,6 @@ func main() {
 	bookingService := service.NewBookingService(bookingRepository, db, validate)
 	bookingController := controller.NewBookingController(bookingService)
 
-	userRepository := repository.NewUserRepository()
-	userService := service.NewUserService(userRepository, db, validate)
-	userController := controller.NewUserController(userService)
-
 	roleRepository := repository.NewRoleRepository()
 	roleService := service.NewRoleService(roleRepository, db, validate)
 	roleController := controller.NewRoleController(roleService)
@@ -46,6 +42,10 @@ func main() {
 	invoiceRepository := repository.NewInvoiceRepository()
 	invoiceService := service.NewInvoiceService(invoiceRepository, db, validate)
 	invoiceController := controller.NewInvoiceController(invoiceService)
+
+	userRepository := repository.NewUserRepository()
+	userService := service.NewUserService(userRepository, db, validate)
+	userController := controller.NewUserController(userService)
 
 	router := routers.NewBookingRouter(bookingController)
 	router = routers.NewHotelRouter(hotelController)
