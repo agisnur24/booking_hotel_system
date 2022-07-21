@@ -86,7 +86,7 @@ func (service *DiscountServiceImpl) Delete(ctx context.Context, discountId int) 
 }
 
 func (service *DiscountServiceImpl) FindById(ctx context.Context, discountId int) web.DiscountResponse {
-	logrus.Info("Guest ser Find By Id star")
+	logrus.Info("Discount ser Find By Id star")
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -95,17 +95,17 @@ func (service *DiscountServiceImpl) FindById(ctx context.Context, discountId int
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
-	logrus.Info("Guest ser Find By Id end")
+	logrus.Info("Discount ser Find By Id end")
 	return helper.ToDiscountResponse(discount)
 }
 
 func (service *DiscountServiceImpl) FindAll(ctx context.Context) []web.DiscountResponse {
-	logrus.Info("Guest ser Find al star")
+	logrus.Info("Discount ser Find al star")
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
 	discounts := service.DiscountRepository.FindAll(ctx, tx)
-	logrus.Info("Guest ser Find al end")
+	logrus.Info("Discount ser Find al end")
 	return helper.ToDiscountResponses(discounts)
 }

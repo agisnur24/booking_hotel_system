@@ -9,7 +9,9 @@ import (
 	"github.com/agisnur24/booking_hotel_system.git/repository"
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/go-playground/validator/v10"
+	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -36,28 +38,29 @@ func main() {
 	discountRepository := repository.NewDiscountRepository()
 	discountService := service.NewDiscountService(discountRepository, db, validate)
 	discountController := controller.NewDiscountController(discountService)
-	/*
-		meetingRoomRepository := repository.NewMeetingRoomRepository()
-		meetingRoomService := service.NewMeetingRoomService(meetingRoomRepository, db, validate)
-		meetingRoomController := controller.NewMeetingRoomController(meetingRoomService)
 
-		invoiceRepository := repository.NewInvoiceRepository()
-		invoiceService := service.NewInvoiceService(invoiceRepository, db, validate)
-		invoiceController := controller.NewInvoiceController(invoiceService)*/
+	meetingRoomRepository := repository.NewMeetingRoomRepository()
+	meetingRoomService := service.NewMeetingRoomService(meetingRoomRepository, db, validate)
+	meetingRoomController := controller.NewMeetingRoomController(meetingRoomService)
+
+	invoiceRepository := repository.NewInvoiceRepository()
+	invoiceService := service.NewInvoiceService(invoiceRepository, db, validate)
+	invoiceController := controller.NewInvoiceController(invoiceService)
 
 	router := routers.NewBookingRouter(bookingController)
 	router = routers.NewHotelRouter(hotelController)
 	router = routers.NewRoleRouter(roleController)
 	router = routers.NewUserRouter(userController)
 	router = routers.NewDiscountRouter(discountController)
-	/*router = routers.NewMeetingRoomRouter(meetingRoomController)
-	router = routers.NewInvoiceRouter(invoiceController)*/
+	router = routers.NewMeetingRoomRouter(meetingRoomController)
+	router = routers.NewInvoiceRouter(invoiceController)
 
 	server := http.Server{
-		Addr:    "localhost:3000",
+		//Addr:    "localhost:3000",
+		Addr:    "https://booking-management-system-fp.herokuapp.com/" + os.Getenv("PORT") + "/",
 		Handler: middleware.NewAuthMiddleware(router),
 	}
-
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), router))
 	err := server.ListenAndServe()
 	helper.PanicIfError(err)
 }
