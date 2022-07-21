@@ -6,6 +6,7 @@ import (
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"strconv"
 )
 
 type UserControllerImpl struct {
@@ -36,24 +37,28 @@ func (controller *UserControllerImpl) Update(writer http.ResponseWriter, request
 	userUpdateRequest := web.UserUpdateRequest{}
 	helper.ReadFromRequestBody(request, &userUpdateRequest)
 
-	userEmail := params.ByName("userEmail")
+	userId := params.ByName("userId")
+	id, err := strconv.Atoi(userId)
+	helper.PanicIfError(err)
 
-	userUpdateRequest.Email = userEmail
+	userUpdateRequest.Id = id
 
-	categoryResponse := controller.UserService.Update(request.Context(), userUpdateRequest)
+	userResponse := controller.UserService.Update(request.Context(), userUpdateRequest)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   categoryResponse,
+		Data:   userResponse,
 	}
 
 	helper.WriteToResponseBody(writer, webResponse)
 }
 
 func (controller *UserControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	userEmail := params.ByName("userEmail")
+	userId := params.ByName("userId")
+	id, err := strconv.Atoi(userId)
+	helper.PanicIfError(err)
 
-	controller.UserService.Delete(request.Context(), userEmail)
+	controller.UserService.Delete(request.Context(), id)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
@@ -62,25 +67,27 @@ func (controller *UserControllerImpl) Delete(writer http.ResponseWriter, request
 	helper.WriteToResponseBody(writer, webResponse)
 }
 
-func (controller *UserControllerImpl) FindByEmail(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	userEmail := params.ByName("userEmail")
+func (controller *UserControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	userId := params.ByName("userId")
+	id, err := strconv.Atoi(userId)
+	helper.PanicIfError(err)
 
-	customerResponse := controller.UserService.FindByEmail(request.Context(), userEmail)
+	userResponse := controller.UserService.FindById(request.Context(), id)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   customerResponse,
+		Data:   userResponse,
 	}
 
 	helper.WriteToResponseBody(writer, webResponse)
 }
 
 func (controller *UserControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	customerResponse := controller.UserService.FindAll(request.Context())
+	userResponses := controller.UserService.FindAll(request.Context())
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   customerResponse,
+		Data:   userResponses,
 	}
 
 	helper.WriteToResponseBody(writer, webResponse)
