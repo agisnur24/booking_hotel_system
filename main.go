@@ -47,13 +47,33 @@ func main() {
 	userService := service.NewUserService(userRepository, db, validate)
 	userController := controller.NewUserController(userService)
 
+	mrpRepository := repository.NewMeetingRoomPricingRepository()
+	mrpService := service.NewMeetingRoomPricingService(mrpRepository, db, validate)
+	mrpController := controller.NewMeetingRoomPricingController(mrpService)
+
+	facilityRepository := repository.NewFacilityRepository()
+	facilityService := service.NewFacilityService(facilityRepository, db, validate)
+	facilityController := controller.NewFacilityController(facilityService)
+
+	floorRepository := repository.NewFloorRepository()
+	floorService := service.NewFloorService(floorRepository, db, validate)
+	floorController := controller.NewFloorController(floorService)
+
+	employeeRepository := repository.NewEmployeeRepository()
+	employeeService := service.NewEmployeeService(employeeRepository, db, validate)
+	employeeController := controller.NewEmployeeController(employeeService)
+
 	router := routers.NewBookingRouter(bookingController)
 	router = routers.NewHotelRouter(hotelController)
 	router = routers.NewRoleRouter(roleController)
-	router = routers.NewUserRouter(userController)
 	router = routers.NewDiscountRouter(discountController)
+	router = routers.NewUserRouter(userController)
 	router = routers.NewMeetingRoomRouter(meetingRoomController)
 	router = routers.NewInvoiceRouter(invoiceController)
+	router = routers.NewMeetingRoomPricingRouter(mrpController)
+	router = routers.NewFacilityRouter(facilityController)
+	router = routers.NewFloorRouter(floorController)
+	router = routers.NewEmployeeRouter(employeeController)
 
 	server := http.Server{
 		//Addr:    "localhost:3000",

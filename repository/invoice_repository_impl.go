@@ -42,7 +42,8 @@ func (repository InvoiceRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, 
 }
 
 func (repository InvoiceRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, invoiceId int) (domain.Invoice, error) {
-	SQL := "select i.id, i.number, i.employee_id, i.meeting_room_pricing_id, i.discount_id, i.pic, e.name as employee_name, m.price as price, m.price_type as price_type, d.rate as discount_rate, d.status as discount_status from (((invoices i inner join employees e on i.employee_id=e.id) inner join meeting_room_pricings m on i.meeting_room_pricing_id=m.id) inner join discounts d on i.discount_id=d.id) where i.id=?"
+	SQL := "select i.id, i.number, i.employee_id, i.meeting_room_pricing_id, i.discount_id, i.pic, e.name as employee_name, m.price as price, m.price_type as price_type, d.rate as discount_rate, d.status as discount_status " +
+		"from (((invoices i inner join employees e on i.employee_id=e.id) inner join meeting_room_pricings m on i.meeting_room_pricing_id=m.id) inner join discounts d on i.discount_id=d.id) where i.id=?"
 	rows, err := tx.QueryContext(ctx, SQL, invoiceId)
 	helper.PanicIfError(err)
 	defer rows.Close()
