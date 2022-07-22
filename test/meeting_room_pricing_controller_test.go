@@ -1,12 +1,14 @@
 package test
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"github.com/agisnur24/booking_hotel_system.git/app/routers"
 	"github.com/agisnur24/booking_hotel_system.git/controller"
 	"github.com/agisnur24/booking_hotel_system.git/helper"
 	"github.com/agisnur24/booking_hotel_system.git/middleware"
+	"github.com/agisnur24/booking_hotel_system.git/model/domain"
 	"github.com/agisnur24/booking_hotel_system.git/repository"
 	"github.com/agisnur24/booking_hotel_system.git/service"
 	"github.com/go-playground/validator/v10"
@@ -14,6 +16,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -50,7 +53,7 @@ func TestCreateMeetingRoomPricingSuccess(t *testing.T) {
 	truncateMeetingRoomPricing(db)
 	router := setupMeetingRoomPricingRouter(db)
 
-	requestBody := strings.NewReader(`{"meeting_room_id" : 3, "price" : "300000", "price_type" : "hourly"}`)
+	requestBody := strings.NewReader(`{"meeting_room_id" : 1, "price" : "300000", "price_type" : "hourly"}`)
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/meeting_room_pricings", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
@@ -68,7 +71,7 @@ func TestCreateMeetingRoomPricingSuccess(t *testing.T) {
 
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
-	assert.Equal(t, 3, int(responseBody["data"].(map[string]interface{})["meeting_room_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["meeting_room_id"].(float64)))
 	assert.Equal(t, "300000", responseBody["data"].(map[string]interface{})["price"])
 	assert.Equal(t, "hourly", responseBody["data"].(map[string]interface{})["price_type"])
 }
@@ -98,7 +101,42 @@ func TestCreateMeetingRoomPricingFailed(t *testing.T) {
 	assert.Equal(t, "BAD REQUEST", responseBody["status"])
 }
 
-/*func TestUpdateMeetingRoomPricingSuccess(t *testing.T) {
+func TestUpdateMeetingRoomPricingSuccess(t *testing.T) {
+	db := setupTestMeetingRoomPricingDB()
+	truncateMeetingRoomPricing(db)
+
+	tx, _ := db.Begin()
+	meetingRoomPricingRepository := repository.NewMeetingRoomPricingRepository()
+	meetingRoomPricing := meetingRoomPricingRepository.Create(context.Background(), tx, domain.MeetingRoomPricing{
+		MeetingRoomId: 1,
+		Price:         "300000",
+		PriceType:     "hourly",
+	})
+	tx.Commit()
+
+	router := setupMeetingRoomPricingRouter(db)
+
+	requestBody := strings.NewReader(`{"meeting_room_id" : 1, "price" : "300000", "price_type" : "hourly"}`)
+	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/meeting_room_pricings/"+strconv.Itoa(meetingRoomPricing.Id), requestBody)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("X-API-Key", "RAHASIA")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 400, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 400, int(responseBody["code"].(float64)))
+	assert.Equal(t, "BAD REQUEST", responseBody["status"])
+}
+
+/*func TestGetMeetingRoomPricingSuccess(t *testing.T) {
 	db := setupTestMeetingRoomPricingDB()
 	truncateMeetingRoomPricing(db)
 
@@ -113,9 +151,7 @@ func TestCreateMeetingRoomPricingFailed(t *testing.T) {
 
 	router := setupMeetingRoomPricingRouter(db)
 
-	requestBody := strings.NewReader(`{"meeting_room_id" : 3, "price" : "300000", "price_type" : "hourly"}`)
-	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/employees/"+strconv.Itoa(meetingRoomPricing.Id), requestBody)
-	request.Header.Add("Content-Type", "application/json")
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/employees/"+strconv.Itoa(meetingRoomPricing.Id), nil)
 	request.Header.Add("X-API-Key", "RAHASIA")
 
 	recorder := httptest.NewRecorder()
@@ -132,9 +168,139 @@ func TestCreateMeetingRoomPricingFailed(t *testing.T) {
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
 	assert.Equal(t, meetingRoomPricing.Id, int(responseBody["data"].(map[string]interface{})["id"].(float64)))
-	assert.Equal(t, 3, int(responseBody["data"].(map[string]interface{})["meeting_room_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["meeting_room_id"].(float64)))
 	assert.Equal(t, "300000", responseBody["data"].(map[string]interface{})["price"])
 	assert.Equal(t, "hourly", responseBody["data"].(map[string]interface{})["price_type"])
 	assert.Equal(t, "eko", responseBody["data"].(map[string]interface{})["meeting_room_name"])
 	assert.Equal(t, "5", responseBody["data"].(map[string]interface{})["meeting_room_capacity"])
+}
+
+/*func TestUpdateMeetingRoomPricingFail(t *testing.T) {
+	db := setupTestMeetingRoomPricingDB()
+	truncateMeetingRoomPricing(db)
+
+	tx, _ := db.Begin()
+	meetingRoomPricingRepository := repository.NewMeetingRoomPricingRepository()
+	meetingRoomPricing := meetingRoomPricingRepository.Create(context.Background(), tx, domain.MeetingRoomPricing{
+		Name: "eko",
+	})
+	tx.Commit()
+
+	router := setupMeetingRoomPricingRouter(db)
+
+	requestBody := strings.NewReader(`{"name" : ""}`)
+	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/meeting_room_pricings/"+strconv.Itoa(meetingRoomPricing.Id), requestBody)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("X-API-Key", "RAHASIA")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 400, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 400, int(responseBody["code"].(float64)))
+	assert.Equal(t, "BAD REQUEST", responseBody["status"])
+}*/
+
+/*func TestGetMeetingRoomPricingSuccess(t *testing.T) {
+	db := setupTestMeetingRoomPricingDB()
+	truncateMeetingRoomPricing(db)
+
+	tx, _ := db.Begin()
+	meetingRoomPricingRepository := repository.NewMeetingRoomPricingRepository()
+	meetingRoomPricing := meetingRoomPricingRepository.Create(context.Background(), tx, domain.MeetingRoomPricing{
+		MeetingRoomId: 1,
+		Price:         "300000",
+		PriceType:     "hourly",
+	})
+	tx.Commit()
+
+	router := setupMeetingRoomPricingRouter(db)
+
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/employees/"+strconv.Itoa(meetingRoomPricing.Id), nil)
+	request.Header.Add("X-API-Key", "RAHASIA")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 200, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
+	assert.Equal(t, meetingRoomPricing.Id, int(responseBody["data"].(map[string]interface{})["id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["meeting_room_id"].(float64)))
+	assert.Equal(t, "300000", responseBody["data"].(map[string]interface{})["price"])
+	assert.Equal(t, "hourly", responseBody["data"].(map[string]interface{})["price_type"])
+	assert.Equal(t, "eko", responseBody["data"].(map[string]interface{})["meeting_room_name"])
+	assert.Equal(t, "5", responseBody["data"].(map[string]interface{})["meeting_room_capacity"])
+
+}*/
+
+/*func TestGetMeetingRoomPricingFailed(t *testing.T) {
+	db := setupTestMeetingRoomPricingDB()
+	truncateMeetingRoomPricing(db)
+	router := setupMeetingRoomPricingRouter(db)
+
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/meeting_room_pricings/404", nil)
+	request.Header.Add("X-API-Key", "RAHASIA")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 404, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 404, int(responseBody["code"].(float64)))
+	assert.Equal(t, "NOT FOUND", responseBody["status"])
+}
+
+func TestDeleteMeetingRoomPricingSuccess(t *testing.T) {
+	db := setupTestMeetingRoomPricingDB()
+	truncateMeetingRoomPricing(db)
+
+	tx, _ := db.Begin()
+	meetingRoomPricingRepository := repository.NewMeetingRoomPricingRepository()
+	meetingRoomPricing := meetingRoomPricingRepository.Create(context.Background(), tx, domain.MeetingRoomPricing{
+		MeetingRoomId: 3,
+		Price:         "300000",
+		PriceType:     "hourly",
+	})
+	tx.Commit()
+
+	router := setupMeetingRoomPricingRouter(db)
+
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/meeting_room_pricings/"+strconv.Itoa(meetingRoomPricing.Id), nil)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("X-API-Key", "RAHASIA")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 200, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
 }*/

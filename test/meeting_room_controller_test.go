@@ -53,7 +53,7 @@ func TestCreateMeetingRoomSuccess(t *testing.T) {
 	truncateMeetingRoom(db)
 	router := setupMeetingRoomRouter(db)
 
-	requestBody := strings.NewReader(`{"floor_id" : 1, "name" : "eko", "capacity" : "5", "facility_id" : 5}`)
+	requestBody := strings.NewReader(`{"floor_id" : 1, "name" : "eko", "capacity" : "5", "facility_id" : 1}`)
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/meeting_rooms", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
@@ -74,7 +74,8 @@ func TestCreateMeetingRoomSuccess(t *testing.T) {
 	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["floor_id"].(float64)))
 	assert.Equal(t, "eko", responseBody["data"].(map[string]interface{})["name"])
 	assert.Equal(t, "5", responseBody["data"].(map[string]interface{})["capacity"])
-	assert.Equal(t, 5, int(responseBody["data"].(map[string]interface{})["facility_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["facility_id"].(float64)))
+
 }
 
 func TestCreateMeetingRoomFailed(t *testing.T) {
@@ -112,13 +113,13 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 		FloorId:    1,
 		Name:       "eko",
 		Capacity:   "5",
-		FacilityId: 5,
+		FacilityId: 1,
 	})
 	tx.Commit()
 
 	router := setupMeetingRoomRouter(db)
 
-	requestBody := strings.NewReader(`{"floor_id" : 1, "name" : "eko", "capacity" : "5", "facility_id" : 5}`)
+	requestBody := strings.NewReader(`{"floor_id" : 1, "name" : "eko", "capacity" : "5", "facility_id" : 1}`)
 	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/meeting_rooms/"+strconv.Itoa(meetingRoom.Id), requestBody)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("X-API-Key", "RAHASIA")
@@ -140,15 +141,15 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["floor_id"].(float64)))
 	assert.Equal(t, "eko", responseBody["data"].(map[string]interface{})["name"])
 	assert.Equal(t, "5", responseBody["data"].(map[string]interface{})["capacity"])
-	assert.Equal(t, 5, int(responseBody["data"].(map[string]interface{})["facility_id"].(float64)))
-	assert.Equal(t, "mawar", responseBody["data"].(map[string]interface{})["floor_name"])
-	assert.Equal(t, "lumayan", responseBody["data"].(map[string]interface{})["floor_description"])
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["facility_id"].(float64)))
+	assert.Equal(t, "lantai 1", responseBody["data"].(map[string]interface{})["floor_name"])
+	assert.Equal(t, "lantai khusus smooking room", responseBody["data"].(map[string]interface{})["floor_description"])
 	assert.Equal(t, "swimming pool", responseBody["data"].(map[string]interface{})["facility_name"])
 	assert.Equal(t, "airnya bau", responseBody["data"].(map[string]interface{})["facility_description"])
 
 }
 
-/*func TestUpdateMeetingRoomFailed(t *testing.T) {
+func TestUpdateMeetingRoomFailed(t *testing.T) {
 	db := setupTestMeetingRoomDB()
 	truncateMeetingRoom(db)
 
@@ -179,9 +180,9 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 
 	assert.Equal(t, 400, int(responseBody["code"].(float64)))
 	assert.Equal(t, "BAD REQUEST", responseBody["status"])
-}*/
+}
 
-/*func TestGetMeetingRoomSuccess(t *testing.T) {
+func TestGetMeetingRoomSuccess(t *testing.T) {
 	db := setupTestMeetingRoomDB()
 	truncateMeetingRoom(db)
 
@@ -191,7 +192,7 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 		FloorId:    1,
 		Name:       "eko",
 		Capacity:   "5",
-		FacilityId: 5,
+		FacilityId: 1,
 	})
 	tx.Commit()
 
@@ -217,11 +218,11 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["floor_id"].(float64)))
 	assert.Equal(t, "eko", responseBody["data"].(map[string]interface{})["name"])
 	assert.Equal(t, "5", responseBody["data"].(map[string]interface{})["capacity"])
-	assert.Equal(t, 5, int(responseBody["data"].(map[string]interface{})["facility_id"].(float64)))
+	assert.Equal(t, 1, int(responseBody["data"].(map[string]interface{})["facility_id"].(float64)))
 
-}*/
+}
 
-/*func TestGetMeetingRoomFailed(t *testing.T) {
+func TestGetMeetingRoomFailed(t *testing.T) {
 	db := setupTestMeetingRoomDB()
 	truncateMeetingRoom(db)
 	router := setupMeetingRoomRouter(db)
@@ -242,9 +243,9 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 
 	assert.Equal(t, 404, int(responseBody["code"].(float64)))
 	assert.Equal(t, "NOT FOUND", responseBody["status"])
-}*/
+}
 
-/*func TestDeleteMeetingRoomSuccess(t *testing.T) {
+func TestDeleteMeetingRoomSuccess(t *testing.T) {
 	db := setupTestMeetingRoomDB()
 	truncateMeetingRoom(db)
 
@@ -254,7 +255,7 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 		FloorId:    1,
 		Name:       "eko",
 		Capacity:   "5",
-		FacilityId: 5,
+		FacilityId: 1,
 	})
 	tx.Commit()
 
@@ -277,9 +278,9 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 
 	assert.Equal(t, 200, int(responseBody["code"].(float64)))
 	assert.Equal(t, "OK", responseBody["status"])
-}*/
+}
 
-/*func TestDeleteMeetingRoomFail(t *testing.T) {
+func TestDeleteMeetingRoomFailed(t *testing.T) {
 	db := setupTestMeetingRoomDB()
 	truncateMeetingRoom(db)
 	router := setupMeetingRoomRouter(db)
@@ -301,9 +302,9 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 
 	assert.Equal(t, 404, int(responseBody["code"].(float64)))
 	assert.Equal(t, "NOT FOUND", responseBody["status"])
-}*/
+}
 
-/*func TestListMeetingRoomSuccess(t *testing.T) {
+func TestListMeetingRoomSuccess(t *testing.T) {
 	db := setupTestMeetingRoomDB()
 	truncateMeetingRoom(db)
 
@@ -313,21 +314,21 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 		FloorId:             1,
 		Name:                "eko",
 		Capacity:            "5",
-		FacilityId:          5,
-		FloorName:           "mawar",
-		FloorDescription:    "lumayan",
+		FacilityId:          1,
+		FloorName:           "lantai 1",
+		FloorDescription:    "lantai khusus smooking room",
 		FacilityName:        "swimming pool",
 		FacilityDescription: "airnya bau",
 	})
 	meetingRoom2 := meetingRoomRepository.Create(context.Background(), tx, domain.MeetingRoom{
 		FloorId:             2,
-		Name:                "edi",
-		Capacity:            "6",
-		FacilityId:          5,
-		FloorName:           "melati",
-		FloorDescription:    "bagus",
+		Name:                "semeru",
+		Capacity:            "5",
+		FacilityId:          2,
+		FloorName:           "lantai 2",
+		FloorDescription:    "lantai khusus makan",
 		FacilityName:        "gym",
-		FacilityDescription: "berat",
+		FacilityDescription: "perlengkapan sangat lengkap",
 	})
 	tx.Commit()
 
@@ -374,9 +375,9 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 	assert.Equal(t, meetingRoom2.FloorDescription, meetingRoomResponse2["floor_description"])
 	assert.Equal(t, meetingRoom2.FacilityName, meetingRoomResponse2["facility_name"])
 	assert.Equal(t, meetingRoom2.FacilityDescription, meetingRoomResponse2["facility_description"])
-}*/
+}
 
-/*func TestMeetingRoomUnauthorized(t *testing.T) {
+func TestMeetingRoomUnauthorized(t *testing.T) {
 	db := setupTestMeetingRoomDB()
 	truncateMeetingRoom(db)
 	router := setupMeetingRoomRouter(db)
@@ -397,4 +398,4 @@ func TestUpdateMeetingRoomSuccess(t *testing.T) {
 
 	assert.Equal(t, 401, int(responseBody["code"].(float64)))
 	assert.Equal(t, "UNAUTHORIZED", responseBody["status"])
-}*/
+}

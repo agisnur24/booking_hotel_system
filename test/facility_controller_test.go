@@ -74,7 +74,7 @@ func TestCreateFacilitySuccess(t *testing.T) {
 	assert.Equal(t, "airnya bau", responseBody["data"].(map[string]interface{})["description"])
 }
 
-func TestCreateFacilityFail(t *testing.T) {
+func TestCreateFacilityFailed(t *testing.T) {
 	db := setupTestFacilityDB()
 	truncateFacility(db)
 	router := setupFacilityRouter(db)
