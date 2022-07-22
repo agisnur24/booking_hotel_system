@@ -17,7 +17,7 @@ func NewDiscountRepository() DiscountRepository {
 
 func (repository DiscountRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, discount domain.Discount) domain.Discount {
 	SQL := "insert into discounts(employee_id, hotel_id, meeting_room_id, rate, status, request_date) values (?, ?, ?, ?, ?, ?)"
-	result, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.Rate, discount.Status, discount.RequestDate)
+	result, err := tx.ExecContext(ctx, SQL, discount.EmployeeId, discount.HotelId, discount.MeetingRoomId, discount.Rate, discount.Status, discount.RequestDate)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
