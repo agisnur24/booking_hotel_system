@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/agisnur24/booking_hotel_system.git/app"
-	"github.com/agisnur24/booking_hotel_system.git/app/routers"
 	"github.com/agisnur24/booking_hotel_system.git/controller"
 	"github.com/agisnur24/booking_hotel_system.git/helper"
 	"github.com/agisnur24/booking_hotel_system.git/middleware"
@@ -63,17 +62,8 @@ func main() {
 	employeeService := service.NewEmployeeService(employeeRepository, db, validate)
 	employeeController := controller.NewEmployeeController(employeeService)
 
-	router := routers.NewBookingRouter(bookingController)
-	router = routers.NewHotelRouter(hotelController)
-	router = routers.NewRoleRouter(roleController)
-	router = routers.NewDiscountRouter(discountController)
-	router = routers.NewUserRouter(userController)
-	router = routers.NewMeetingRoomRouter(meetingRoomController)
-	router = routers.NewInvoiceRouter(invoiceController)
-	router = routers.NewMeetingRoomPricingRouter(mrpController)
-	router = routers.NewFacilityRouter(facilityController)
-	router = routers.NewFloorRouter(floorController)
-	router = routers.NewEmployeeRouter(employeeController)
+	router := app.NewRouter(bookingController, discountController, employeeController, facilityController,
+		floorController, hotelController, invoiceController, mrpController, meetingRoomController, roleController, userController)
 
 	server := http.Server{
 		//Addr:    "localhost:3000",
